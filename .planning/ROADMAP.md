@@ -30,10 +30,10 @@ MemoraLabs is a productization of ZimMemory v15 — the core intelligence alread
 **Plans:** 4 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — System DB schema + project scaffolding (config, requirements, Pydantic models)
-- [ ] 01-02-PLAN.md — Tenant DB schema (memories, entities, relations ported from ZimMemory v15)
-- [ ] 01-03-PLAN.md — TenantDBManager (LRU connection pool, WAL mode, isolation enforcement)
-- [ ] 01-04-PLAN.md — FastAPI app with lifespan, health endpoint, render.yaml, keep-alive docs
+- [x] 01-01-PLAN.md — System DB schema + project scaffolding (config, requirements, Pydantic models)
+- [x] 01-02-PLAN.md — Tenant DB schema (memories, entities, relations ported from ZimMemory v15)
+- [x] 01-03-PLAN.md — TenantDBManager (LRU connection pool, WAL mode, isolation enforcement)
+- [x] 01-04-PLAN.md — FastAPI app with lifespan, health endpoint, render.yaml, keep-alive docs
 
 ### Phase 2: Core Memory API
 **Goal**: A working memory API — store, search, update, delete — with vector retrieval, entity extraction, temporal decay, and deduplication
@@ -46,14 +46,14 @@ Plans:
   4. Entity extraction runs automatically — after storing "Alice met Bob at Google," querying for "Alice" returns the memory
   5. Duplicate writes are silently blocked — submitting the same memory text twice results in one stored memory
   6. Every API call is recorded in `usage_log` before the response is returned
-**Plans**: TBD
+**Plans:** 5 plans in 3 waves
 
 Plans:
-- [ ] 02-01: Core engine port — refactor ZimMemory `retrieval.py`, `storage.py`, `entities.py`, `decay.py` to pass `conn` explicitly (eliminate global state)
-- [ ] 02-02: Embedding client — async Fireworks.ai integration with queue, per-tenant rate limit, exponential backoff on 429
-- [ ] 02-03: Memory write endpoint — `POST /v1/memory` with dedup check, entity extraction trigger, decay timestamp, usage log
-- [ ] 02-04: Memory read endpoints — `GET /v1/memory`, `GET /v1/memory/{id}`, `PATCH /v1/memory/{id}`, `DELETE /v1/memory/{id}` with pagination
-- [ ] 02-05: Memory search endpoint — `POST /v1/memory/search` with semantic scoring, metadata filters, scoped search
+- [ ] 02-01-PLAN.md — Core services (dedup, decay, entity extraction), deps, Pydantic models [Wave 1]
+- [ ] 02-02-PLAN.md — Embedding client (Fireworks.ai) + vector index manager (hnswlib) [Wave 1]
+- [ ] 02-03-PLAN.md — POST /v1/memory endpoint with dedup, background embedding/entities, usage log [Wave 2]
+- [ ] 02-04-PLAN.md — GET/PATCH/DELETE /v1/memory endpoints with pagination [Wave 2]
+- [ ] 02-05-PLAN.md — POST /v1/memory/search with semantic scoring, metadata filters, decay [Wave 3]
 
 ### Phase 3: Auth API + Signup
 **Goal**: Developers can sign up, receive an API key, and authenticate all requests — the service is a real product, not a stub
