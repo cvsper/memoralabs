@@ -24,6 +24,7 @@ import aiosqlite
 
 from app.services.decay import apply_decay
 from app.services.embedding import EmbeddingClient
+from app.services.retrieval_feedback import log_retrieval
 from app.services.vector_index import TenantIndexManager
 
 logger = logging.getLogger(__name__)
@@ -141,6 +142,15 @@ async def search_memories(
                 "session_id": row["session_id"],
                 "created_at": row["created_at"],
             })
+        # ------------------------------------------------------------------
+        # Fallback Step 8: Log retrieval feedback (training signal for Q-learning)
+        # ------------------------------------------------------------------
+        try:
+            result_ids = [r["id"] for r in results]
+            result_scores = [r["score"] for r in results]
+            await log_retrieval(conn, query, result_ids, result_scores, strategy="fallback")
+        except Exception:
+            logger.debug("Retrieval feedback logging failed (non-fatal)")
         return results
 
     # ------------------------------------------------------------------
@@ -186,6 +196,16 @@ async def search_memories(
             "session_id": row["session_id"],
             "created_at": row["created_at"],
         })
+
+    # ------------------------------------------------------------------
+    # Step 8: Log retrieval feedback (training signal for Q-learning)
+    # ------------------------------------------------------------------
+    try:
+        result_ids = [r["id"] for r in results]
+        result_scores = [r["score"] for r in results]
+        await log_retrieval(conn, query, result_ids, result_scores)
+    except Exception:
+        logger.debug("Retrieval feedback logging failed (non-fatal)")
 
     return results
 
