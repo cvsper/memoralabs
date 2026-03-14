@@ -24,6 +24,7 @@ from app.deps import get_tenant
 from app.limiter import limiter
 from app.routers.auth import router as auth_router
 from app.routers.health import router as health_router
+from app.routers.intelligence import router as intelligence_router
 from app.routers.memory import router as memory_router
 from app.services.embedding import EmbeddingClient
 from app.services.vector_index import TenantIndexManager
@@ -82,6 +83,7 @@ Store facts, conversations, and context — then retrieve them with semantic sea
         {"name": "auth", "description": "Developer registration and API key management"},
         {"name": "memory", "description": "Store, search, list, update, and delete memories"},
         {"name": "health", "description": "Service health and status"},
+        {"name": "intelligence", "description": "Self-improving memory intelligence (Q-learning, gaps)"},
     ],
 )
 
@@ -180,6 +182,7 @@ async def quickstart_page():
 app.include_router(auth_router)
 app.include_router(health_router)
 app.include_router(memory_router)
+app.include_router(intelligence_router)
 
 
 # ---------------------------------------------------------------------------
