@@ -61,9 +61,27 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="MemoraLabs",
-    description="Memory-as-a-Service API",
+    description="""## Memory-as-a-Service API
+
+MemoraLabs gives your AI agents persistent, searchable memory.
+Store facts, conversations, and context — then retrieve them with semantic search.
+
+### Quick Start
+1. **Sign up** — `POST /v1/auth/signup`
+2. **Store a memory** — `POST /v1/memory`
+3. **Search memories** — `POST /v1/memory/search`
+
+[Full Quickstart Guide](/quickstart) | [GitHub](https://github.com/memoralabs)
+""",
     version="0.1.0",
     lifespan=lifespan,
+    docs_url="/docs",
+    redoc_url="/redoc",
+    openapi_tags=[
+        {"name": "auth", "description": "Developer registration and API key management"},
+        {"name": "memory", "description": "Store, search, list, update, and delete memories"},
+        {"name": "health", "description": "Service health and status"},
+    ],
 )
 
 
@@ -141,7 +159,7 @@ app.include_router(memory_router)
 # ---------------------------------------------------------------------------
 
 
-@app.get("/_test/tenant")
+@app.get("/_test/tenant", include_in_schema=False)
 async def _test_get_tenant(
     tenant: Annotated[dict, Depends(get_tenant)],
 ) -> dict:

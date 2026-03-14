@@ -31,10 +31,57 @@ def _generate_key(prefix: str = "ml") -> tuple[str, str, str]:
     return plaintext, key_hash, key_prefix
 
 
-@router.post("/signup", status_code=201, response_model=SignupResponse)
+@router.post(
+    "/signup",
+    status_code=201,
+    response_model=SignupResponse,
+    responses={
+        409: {
+            "description": "Email already registered",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "error": "CONFLICT",
+                        "message": "An account with this email already exists",
+                    }
+                }
+            },
+        },
+        422: {
+            "description": "Validation error",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "error": "VALIDATION_ERROR",
+                        "message": "Request validation failed",
+                        "details": [
+                            {
+                                "loc": ["body", "email"],
+                                "msg": "invalid email format",
+                                "type": "value_error",
+                            }
+                        ],
+                    }
+                }
+            },
+        },
+        429: {
+            "description": "Rate limit exceeded (5/minute)",
+            "content": {
+                "application/json": {
+                    "example": {"error": "RATE_LIMITED", "message": "Rate limit exceeded"}
+                }
+            },
+        },
+    },
+)
 @limiter.limit("5/minute")
 async def signup(body: TenantCreate, request: Request):
-    """Register a new developer account. Returns API key exactly once."""
+    """Register a new developer account and receive your API key.
+
+    The API key is shown **exactly once** — store it securely before leaving this page.
+    Rate limited to 5 requests per minute.
+    """
     system_db = request.app.state.system_db
     tenant_id = str(uuid.uuid4())
 
@@ -60,13 +107,29 @@ async def signup(body: TenantCreate, request: Request):
     )
 
 
-@router.post("/keys/rotate", response_model=KeyRotateResponse)
+@router.post(
+    "/keys/rotate",
+    response_model=KeyRotateResponse,
+    responses={
+        401: {
+            "description": "Missing or invalid API key",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "error": "UNAUTHORIZED",
+                        "message": "Missing Authorization header",
+                    }
+                }
+            },
+        },
+    },
+)
 async def rotate_key(request: Request, tenant: dict = Depends(get_tenant)):
-    """Rotate API key. Authenticates with current key, returns new key exactly once.
+    """Rotate your API key.
 
-    - Deactivates ALL existing keys for this tenant
-    - Generates a new key and stores only the hash
-    - Tenant's memories are unaffected (tenant_id stays the same)
+    Authenticates with your current key, then immediately revokes it and returns a new one.
+    The new key is shown **exactly once** — store it securely.
+    Your memories and tenant ID are unaffected.
     """
     system_db = request.app.state.system_db
 

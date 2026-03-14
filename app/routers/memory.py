@@ -149,7 +149,33 @@ async def _extract_entities(
 # ---------------------------------------------------------------------------
 
 
-@router.post("/memory", status_code=201)
+@router.post(
+    "/memory",
+    status_code=201,
+    response_model=MemoryResponse,
+    responses={
+        200: {
+            "model": MemoryResponse,
+            "description": "Duplicate — identical text already stored",
+        },
+        401: {
+            "description": "Missing or invalid API key",
+            "content": {
+                "application/json": {
+                    "example": {"error": "UNAUTHORIZED", "message": "Invalid API key"}
+                }
+            },
+        },
+        429: {
+            "description": "Rate limit exceeded (60/minute)",
+            "content": {
+                "application/json": {
+                    "example": {"error": "RATE_LIMITED", "message": "Rate limit exceeded"}
+                }
+            },
+        },
+    },
+)
 @limiter.limit("60/minute")
 async def create_memory(
     body: MemoryCreate,
@@ -157,14 +183,12 @@ async def create_memory(
     background_tasks: BackgroundTasks,
     tenant: dict = Depends(get_tenant),
 ):
-    """Store a new memory for the authenticated tenant.
+    """Store a new memory.
 
-    - Returns 201 + MemoryResponse(status="created") for new memories.
-    - Returns 200 + MemoryResponse(status="duplicate") when the same text was
-      already stored (exact match via text_hash — case/whitespace insensitive).
-    - Background tasks: embedding generation + entity extraction.
-    - Every call is recorded in usage_log.
-    - Rate-limited at 60 requests/minute per tenant (MEM-12).
+    Returns 201 with `status="created"` for new memories, or 200 with
+    `status="duplicate"` if the same text already exists (case- and
+    whitespace-insensitive). Embedding generation and entity extraction run
+    in the background — the response is immediate.
     """
     conn = await request.app.state.tenant_manager.get_connection(tenant["id"])
 
@@ -276,23 +300,33 @@ async def create_memory(
 # ---------------------------------------------------------------------------
 
 
-@router.post("/memory/search")
+@router.post(
+    "/memory/search",
+    response_model=MemorySearchResponse,
+    responses={
+        401: {
+            "description": "Missing or invalid API key",
+            "content": {
+                "application/json": {
+                    "example": {"error": "UNAUTHORIZED", "message": "Invalid API key"}
+                }
+            },
+        },
+        429: {"description": "Rate limit exceeded (120/minute)"},
+    },
+)
 @limiter.limit("120/minute")
 async def search_memory(
     body: MemorySearchRequest,
     request: Request,
     tenant: dict = Depends(get_tenant),
 ):
-    """Search memories using vector similarity with metadata-first filtering.
+    """Search memories using semantic similarity.
 
     Combines metadata/scope pre-filtering with vector ANN search and temporal
-    decay for relevance-ranked results. Respects AND/OR logic for metadata
-    filter conditions (MEM-03).
-
-    - Rate-limited at 120 requests/minute per tenant (MEM-12).
-    - Returns memories_used and memories_limit (DX-05).
-    - Falls back to recency sort if embedding client is unavailable.
-    - Every search is recorded in usage_log.
+    decay for relevance-ranked results. Falls back to recency sort if the
+    embedding service is unavailable. Results include `memories_used` and
+    `memories_limit` so you can track usage against your plan.
     """
     conn = await request.app.state.tenant_manager.get_connection(tenant["id"])
 
@@ -345,10 +379,10 @@ async def list_memories(
     session_id: str | None = Query(None),
     tenant: dict = Depends(get_tenant),
 ):
-    """Return a paginated list of non-deleted memories for the authenticated tenant.
+    """List memories with optional filtering and pagination.
 
-    Optionally filter by user_id, agent_id, or session_id. Results are ordered
-    newest-first by created_at.
+    Results are ordered newest-first. Filter by `user_id`, `agent_id`, or
+    `session_id` to narrow results to a specific scope.
     """
     conn = await request.app.state.tenant_manager.get_connection(tenant["id"])
 
@@ -420,17 +454,23 @@ async def list_memories(
 # ---------------------------------------------------------------------------
 
 
-@router.get("/memory/{memory_id}/entities")
+@router.get(
+    "/memory/{memory_id}/entities",
+    responses={
+        401: {"description": "Missing or invalid API key"},
+        404: {"description": "Memory not found"},
+    },
+)
 async def get_memory_entities(
     memory_id: str,
     request: Request,
     tenant: dict = Depends(get_tenant),
 ):
-    """Return entities and relations extracted for a specific memory (RETR-03).
+    """Return entities and relations extracted for a specific memory.
 
-    Entities are discovered by finding all distinct entity IDs referenced as
-    source or target in the relations table for this memory. Relations are
-    returned with resolved source/target names and types.
+    Entities (people, organizations, locations, dates, topics) and their
+    relationships are extracted automatically when a memory is stored.
+    Returns empty lists if extraction has not completed yet.
     """
     conn = await request.app.state.tenant_manager.get_connection(tenant["id"])
 
@@ -516,13 +556,27 @@ async def get_memory_entities(
 # ---------------------------------------------------------------------------
 
 
-@router.get("/memory/{memory_id}", response_model=MemoryResponse)
+@router.get(
+    "/memory/{memory_id}",
+    response_model=MemoryResponse,
+    responses={
+        401: {"description": "Missing or invalid API key"},
+        404: {
+            "description": "Memory not found",
+            "content": {
+                "application/json": {
+                    "example": {"error": "NOT_FOUND", "message": "Memory not found"}
+                }
+            },
+        },
+    },
+)
 async def get_memory(
     memory_id: str,
     request: Request,
     tenant: dict = Depends(get_tenant),
 ):
-    """Return a single memory by ID. Updates access_count and last_accessed on each call."""
+    """Retrieve a single memory by ID."""
     conn = await request.app.state.tenant_manager.get_connection(tenant["id"])
 
     async with conn.execute(
@@ -573,7 +627,14 @@ async def get_memory(
 # ---------------------------------------------------------------------------
 
 
-@router.patch("/memory/{memory_id}", response_model=MemoryResponse)
+@router.patch(
+    "/memory/{memory_id}",
+    response_model=MemoryResponse,
+    responses={
+        401: {"description": "Missing or invalid API key"},
+        404: {"description": "Memory not found"},
+    },
+)
 async def update_memory(
     memory_id: str,
     body: MemoryUpdate,
@@ -581,10 +642,10 @@ async def update_memory(
     background_tasks: BackgroundTasks,
     tenant: dict = Depends(get_tenant),
 ):
-    """Update one or more fields of an existing memory.
+    """Partially update a memory.
 
-    If text is updated, text_hash is recalculated and embedding + entity
-    extraction are re-queued as background tasks.
+    Only provided fields are updated. If `text` is updated, embedding
+    regeneration and entity re-extraction are queued automatically.
     """
     conn = await request.app.state.tenant_manager.get_connection(tenant["id"])
 
@@ -685,16 +746,23 @@ async def update_memory(
 # ---------------------------------------------------------------------------
 
 
-@router.delete("/memory/{memory_id}")
+@router.delete(
+    "/memory/{memory_id}",
+    responses={
+        401: {"description": "Missing or invalid API key"},
+        404: {"description": "Memory not found"},
+    },
+)
 async def delete_memory(
     memory_id: str,
     request: Request,
     tenant: dict = Depends(get_tenant),
 ):
-    """Soft-delete a memory (sets is_deleted=1). Removes it from the vector index.
+    """Delete a memory.
 
-    Memory records are never physically removed from the database.
-    Subsequent GET/PATCH/DELETE calls will return 404.
+    Soft-deletes the memory (marks it as deleted) and removes it from the
+    vector search index. The record is retained internally but will not appear
+    in any future GET, search, or list results.
     """
     conn = await request.app.state.tenant_manager.get_connection(tenant["id"])
 
