@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Memory-as-a-Service for AI Agents. Give your agents persistent, searchable memory.">
+  <title>MemoraLabs — Memory-as-a-Service for AI Agents</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <div class="logo">MemoraLabs</div>
+    <nav>
+      <a href="/docs">API Docs</a>
+      <a href="/quickstart">Quickstart</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <section class="hero">
+    <div class="container">
+      <h1>MemoraLabs</h1>
+      <p class="tagline">Memory-as-a-Service for AI Agents</p>
+      <p class="subtext">
+        Give your AI agents persistent, searchable memory. Store facts, conversations, and context
+        — retrieve them with semantic search. Your agents get smarter over time.
+      </p>
+      <div class="cta-group">
+        <a class="btn btn-primary" href="/docs">Read the Docs</a>
+        <a class="btn btn-secondary" href="/quickstart">Quickstart Guide</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="how-it-works">
+    <div class="container">
+      <h2>How It Works</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-number">1</div>
+          <h3>Sign Up</h3>
+          <p>Create an account and get your API key in seconds.</p>
+        </div>
+        <div class="step">
+          <div class="step-number">2</div>
+          <h3>Store Memories</h3>
+          <p>Send text via a simple POST request. We handle embeddings, entity extraction, and deduplication automatically.</p>
+        </div>
+        <div class="step">
+          <div class="step-number">3</div>
+          <h3>Search &amp; Recall</h3>
+          <p>Query with natural language. Results are ranked by semantic relevance with temporal decay.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="features">
+    <div class="container">
+      <h2>Features</h2>
+      <ul class="feature-list">
+        <li>
+          <strong>Semantic Search</strong>
+          <span>Vector similarity, not keyword matching — your agents find what they mean, not just what they typed.</span>
+        </li>
+        <li>
+          <strong>Entity Extraction</strong>
+          <span>Automatic entity and relation detection so your memory graph builds itself.</span>
+        </li>
+        <li>
+          <strong>Multi-tenant Isolation</strong>
+          <span>Each developer gets their own encrypted data store. Your data never touches another tenant's.</span>
+        </li>
+        <li>
+          <strong>Usage Tracking</strong>
+          <span>Monitor your quota with every search response. Know exactly where you stand.</span>
+        </li>
+        <li>
+          <strong>Self-Improving</strong>
+          <span>Retrieval quality improves as you use it. <em>Coming soon.</em></span>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="get-started">
+    <div class="container">
+      <h2>Get Started</h2>
+      <p>Sign up in one request — no credit card required.</p>
+      <pre><code>curl -X POST https://memoralabs.onrender.com/v1/auth/signup \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Alice", "email": "alice@example.com"}'</code></pre>
+      <div class="cta-group">
+        <a class="btn btn-primary" href="/docs">Read the Docs</a>
+        <a class="btn btn-secondary" href="/quickstart">Quickstart Guide</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="container">
+    <span>MemoraLabs</span>
+    <nav>
+      <a href="/docs">API Docs</a>
+      <a href="/quickstart">Quickstart</a>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>
