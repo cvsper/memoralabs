@@ -47,6 +47,9 @@ async def signup(body: TenantCreate, request: Request):
     key_id = str(uuid.uuid4())
     await create_api_key(system_db, key_id, tenant_id, key_hash, key_prefix)
 
+    # Initialise the tenant's SQLite DB so memory endpoints work immediately after signup.
+    await request.app.state.tenant_manager.create_tenant_db(tenant_id)
+
     return SignupResponse(
         tenant_id=tenant_id,
         email=body.email,
