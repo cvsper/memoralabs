@@ -25,9 +25,18 @@ from starlette.responses import JSONResponse
 from app.db.system import log_usage
 from app.deps import get_tenant
 from app.limiter import limiter
-from app.models.memory import MemoryCreate, MemoryListResponse, MemoryResponse, MemoryUpdate
+from app.models.memory import (
+    MemoryCreate,
+    MemoryListResponse,
+    MemoryResponse,
+    MemorySearchRequest,
+    MemorySearchResponse,
+    MemorySearchResult,
+    MemoryUpdate,
+)
 from app.services.dedup import check_cosine_duplicate, text_hash
 from app.services.entity_extraction import process_entities_for_memory
+from app.services.search import count_tenant_memories, search_memories
 
 logger = logging.getLogger(__name__)
 
@@ -256,6 +265,68 @@ async def create_memory(
         created_at=now,
         updated_at=now,
         status="created",
+    )
+
+
+# ---------------------------------------------------------------------------
+# POST /v1/memory/search — semantic search with metadata filtering + decay
+# IMPORTANT: Defined before GET /memory/{memory_id} to prevent path collision
+# on HNSW searches. HTTP method difference (POST vs GET) also prevents collision
+# but explicit ordering is safer for FastAPI route resolution.
+# ---------------------------------------------------------------------------
+
+
+@router.post("/memory/search")
+@limiter.limit("120/minute")
+async def search_memory(
+    body: MemorySearchRequest,
+    request: Request,
+    tenant: dict = Depends(get_tenant),
+):
+    """Search memories using vector similarity with metadata-first filtering.
+
+    Combines metadata/scope pre-filtering with vector ANN search and temporal
+    decay for relevance-ranked results. Respects AND/OR logic for metadata
+    filter conditions (MEM-03).
+
+    - Rate-limited at 120 requests/minute per tenant (MEM-12).
+    - Returns memories_used and memories_limit (DX-05).
+    - Falls back to recency sort if embedding client is unavailable.
+    - Every search is recorded in usage_log.
+    """
+    conn = await request.app.state.tenant_manager.get_connection(tenant["id"])
+
+    results = await search_memories(
+        conn,
+        request.app.state.embedding_client,
+        request.app.state.index_manager,
+        tenant["id"],
+        body.query,
+        body.user_id,
+        body.agent_id,
+        body.session_id,
+        body.metadata_filter,
+        body.metadata_filter_operator,
+        body.limit,
+    )
+
+    memories_used = await count_tenant_memories(conn)
+    memories_limit = tenant["memory_limit"]
+
+    await log_usage(
+        request.app.state.system_db,
+        tenant["id"],
+        "memory.search",
+        "/v1/memory/search",
+        200,
+        tokens_used=len(body.query.split()),
+    )
+
+    return MemorySearchResponse(
+        results=[MemorySearchResult(**r) for r in results],
+        total=len(results),
+        memories_used=memories_used,
+        memories_limit=memories_limit,
     )
 
 

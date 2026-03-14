@@ -55,6 +55,7 @@ class MemorySearchRequest(BaseModel):
     agent_id: Optional[str] = None
     session_id: Optional[str] = None
     metadata_filter: Optional[dict[str, Any]] = None
+    metadata_filter_operator: Literal["and", "or"] = "and"  # MEM-03: AND/OR logic
     limit: Annotated[int, Field(default=10, ge=1, le=100)] = 10
 
 
