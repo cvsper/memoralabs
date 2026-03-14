@@ -1,3 +1,5 @@
+import os
+import sys
 from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Annotated
@@ -33,6 +35,20 @@ from app.services.vector_index import TenantIndexManager
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
+
+    # Verify persistent disk is mounted on Render — refuse to start if not.
+    # Without this, a failed mount writes to ephemeral storage and data is
+    # lost on restart.
+    if os.environ.get("RENDER"):
+        if not os.path.ismount(str(DATA_DIR)):
+            print(
+                f"FATAL: {DATA_DIR} is not a mounted disk on Render. "
+                "Data would be written to ephemeral storage and lost on restart. "
+                "Check persistent disk configuration in render.yaml.",
+                file=sys.stderr,
+            )
+            sys.exit(1)
+
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     VECTOR_INDEX_DIR.mkdir(parents=True, exist_ok=True)
 
