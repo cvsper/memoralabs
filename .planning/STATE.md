@@ -10,29 +10,29 @@ See: .planning/PROJECT.md (updated 2026-03-14)
 ## Current Position
 
 Phase: 2 of 6 (Core Memory API)
-Plan: 2 of 5 in current phase (02-01 done, 02-02 done)
+Plan: 3 of 5 in current phase (02-01 done, 02-02 done, 02-03 done)
 Status: In progress
-Last activity: 2026-03-14 — 02-02 complete: EmbeddingClient, TenantIndexManager, slowapi Limiter, 57/57 tests
+Last activity: 2026-03-14 — 02-03 complete: POST /v1/memory, dedup, background tasks, rate limiting, 118/118 tests
 
-Progress: [████░░░░░░] 23%
+Progress: [█████░░░░░] 30%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 6 (01-01, 01-02, 01-03, 01-04, 02-01, 02-02)
+- Total plans completed: 7 (01-01, 01-02, 01-03, 01-04, 02-01, 02-02, 02-03)
 - Average duration: ~3 min/plan
-- Total execution time: ~15 min
+- Total execution time: ~18 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-foundation | 4 | ~10 min | ~2.5 min |
-| 02-core-memory-api | 2 | ~5 min | ~2.5 min |
+| 02-core-memory-api | 3 | ~8 min | ~2.7 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-02 (~2 min), 01-03 (~2 min), 01-04 (~4 min), 02-01 (~2 min), 02-02 (~5 min)
-- Trend: Consistent — infrastructure layer work
+- Last 5 plans: 01-03 (~2 min), 01-04 (~4 min), 02-01 (~2 min), 02-02 (~5 min), 02-03 (~3 min)
+- Trend: Consistent — ~3 min/plan average
 
 *Updated after each plan completion*
 
@@ -64,6 +64,9 @@ Key decisions in effect:
 - **02-02 — Rate limit key SHA-256 hashed**: Raw API key never stored in slowapi in-memory store; first 16 hex chars of SHA-256 used as key
 - **02-02 — VECTOR_INDEX_DIR separate from DATA_DIR/tenants**: Per-tenant .idx + .ids.json files at data/indexes/ mirror the data/tenants/ pattern
 - **02-02 — INITIAL_MAX_ELEMENTS=10,000 per tenant**: 10x headroom over free plan 1,000 limit; resize at 80% with 2x growth factor
+- **02-03 — Shared app/limiter.py module**: limiter extracted from app.main to avoid circular import when routers import @limiter.limit decorator
+- **02-03 — JSONResponse for duplicate 200**: endpoint declares status_code=201; explicit JSONResponse(status_code=200) required to override per-response
+- **02-03 — Cosine dedup runs post-embedding in background**: soft-deletes new memory only if near-duplicate found (>=0.95 similarity), original preserved
 
 ### Pending Todos
 
@@ -79,5 +82,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-14
-Stopped at: Completed 02-01-PLAN.md (service modules, deps, Pydantic models, 105/105 tests — added missing 48 tests for dedup/decay/entity/deps)
+Stopped at: Completed 02-03-PLAN.md (POST /v1/memory endpoint, circular import fix via app/limiter.py, 118/118 tests)
 Resume file: None
