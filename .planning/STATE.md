@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-03-14)
 ## Current Position
 
 Phase: 1 of 6 (Foundation)
-Plan: 0 of 4 in current phase
-Status: Ready to plan
-Last activity: 2026-03-14 — Roadmap created, requirements defined (43 v1 requirements, 6 phases)
+Plan: 2 of 4 in current phase (01-01 done, 01-02 done)
+Status: In progress
+Last activity: 2026-03-14 — 01-02 complete: tenant DB schema module + 9 passing tests
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [██░░░░░░░░] 8%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 0
-- Average duration: —
-- Total execution time: 0 hours
+- Total plans completed: 2 (01-01, 01-02)
+- Average duration: ~2 min/plan
+- Total execution time: ~4 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| — | — | — | — |
+| 01-foundation | 2 | ~4 min | ~2 min |
 
 **Recent Trend:**
-- Last 5 plans: —
-- Trend: —
+- Last 5 plans: 01-01 (~2 min), 01-02 (~2 min)
+- Trend: Fast — schema/scaffold work
 
 *Updated after each plan completion*
 
@@ -47,6 +47,10 @@ Key decisions in effect:
 - **Fireworks.ai embeddings**: mxbai-embed-large-v1 (1024-dim). Already integrated. Free tier with async queue.
 - **No Stripe for v1**: Ship faster, validate demand before billing complexity.
 - **No SDKs for v1**: REST API only; SDKs after API surface is stable.
+- **01-01 — Inline SYSTEM_SCHEMA_SQL**: String constant in system.py rather than runtime file read — simpler, no path issues. Migration file kept as documentation.
+- **01-01 — Email regex not pydantic[email]**: Avoids extra dependency for simple format check.
+- **embedding BLOB in Phase 1**: Added embedding BLOB DEFAULT NULL to memories table now to avoid Phase 2 migration.
+- **init_tenant_db takes open connection**: TenantDBManager owns connection lifecycle; schema module only applies DDL.
 
 ### Pending Todos
 
@@ -62,5 +66,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-14
-Stopped at: Roadmap and requirements created. Phase 1 ready to plan.
+Stopped at: Completed 01-01-PLAN.md (system DB layer, scaffold, config, 10 passing tests). 01-02 also complete.
 Resume file: None
