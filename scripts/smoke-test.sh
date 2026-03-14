@@ -43,7 +43,7 @@ get_status() {
 
 # Parse body (everything except last line)
 get_body() {
-    echo "$1" | head -n -1
+    echo "$1" | sed '$d'
 }
 
 echo "============================================"
@@ -77,7 +77,7 @@ PASSWORD="SmokeTest123!"
 RESPONSE=$(curl_call POST "${BASE_URL}/v1/auth/signup" \
     -H "Content-Type: application/json" \
     -H "Accept: application/json" \
-    -d "{\"email\": \"${EMAIL}\", \"password\": \"${PASSWORD}\"}")
+    -d "{\"name\": \"Smoke Test\", \"email\": \"${EMAIL}\", \"password\": \"${PASSWORD}\"}")
 STATUS=$(get_status "$RESPONSE")
 BODY=$(get_body "$RESPONSE")
 
@@ -105,7 +105,7 @@ RESPONSE=$(curl_call POST "${BASE_URL}/v1/memory" \
     -H "Content-Type: application/json" \
     -H "Accept: application/json" \
     -H "Authorization: Bearer ${API_KEY}" \
-    -d "{\"content\": \"${CONTENT}\", \"metadata\": {\"source\": \"smoke-test\"}}")
+    -d "{\"text\": \"${CONTENT}\", \"metadata\": {\"source\": \"smoke-test\"}}")
 STATUS=$(get_status "$RESPONSE")
 BODY=$(get_body "$RESPONSE")
 
@@ -121,6 +121,8 @@ echo ""
 # -----------------------------------------------
 # Step 4: Search memories
 # -----------------------------------------------
+echo "  (waiting 3s for embedding to index...)"
+sleep 3
 echo "--- Step 4: Search Memories ---"
 RESPONSE=$(curl_call POST "${BASE_URL}/v1/memory/search" \
     -H "Content-Type: application/json" \
@@ -143,7 +145,7 @@ echo ""
 # Step 5: Gap detection
 # -----------------------------------------------
 echo "--- Step 5: Gap Detection ---"
-RESPONSE=$(curl_call POST "${BASE_URL}/v1/intelligence/gaps" \
+RESPONSE=$(curl_call POST "${BASE_URL}/v1/memory/gaps" \
     -H "Content-Type: application/json" \
     -H "Accept: application/json" \
     -H "Authorization: Bearer ${API_KEY}" \
@@ -152,9 +154,9 @@ STATUS=$(get_status "$RESPONSE")
 BODY=$(get_body "$RESPONSE")
 
 if [ "$STATUS" = "200" ]; then
-    pass "POST /v1/intelligence/gaps returned 200"
+    pass "POST /v1/memory/gaps returned 200"
 else
-    fail "POST /v1/intelligence/gaps failed (HTTP $STATUS). Body: $BODY"
+    fail "POST /v1/memory/gaps failed (HTTP $STATUS). Body: $BODY"
 fi
 echo ""
 
