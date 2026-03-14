@@ -1,0 +1,21 @@
+# MemoraLabs Render Deployment
+# Persistent disk at /data -- NOT available during build
+# Keep-alive: Configure UptimeRobot (free) to GET /health every 10 minutes
+# UptimeRobot URL: https://memoralabs.onrender.com/health
+
+services:
+  - type: web
+    name: memoralabs-api
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    plan: starter
+    disk:
+      name: memoralabs-data
+      mountPath: /data
+      sizeGB: 1
+    envVars:
+      - key: DATA_DIR
+        value: /data
+      - key: PYTHON_VERSION
+        value: "3.11"
