@@ -9,7 +9,7 @@ MemoraLabs is a productization of ZimMemory v15 — the core intelligence alread
 - [x] **Phase 1: Foundation** - Secure multi-tenant infrastructure: system DB, tenant DB manager, isolation, health endpoint, persistent disk *(completed 2026-03-14)*
 - [x] **Phase 2: Core Memory API** - Port ZimMemory engine to multi-tenant; full memory CRUD, semantic search, entity extraction, decay, deduplication *(completed 2026-03-14)*
 - [x] **Phase 3: Auth API + Signup** - Tenant management, API key generation/rotation, auth middleware wired end-to-end *(completed 2026-03-14)*
-- [ ] **Phase 4: Developer Experience** - Public API docs, landing page, quickstart guide, structured error codes
+- [x] **Phase 4: Developer Experience** - Public API docs, landing page, quickstart guide, structured error codes *(completed 2026-03-14)*
 - [ ] **Phase 5: Self-Improving Memory** - Q-learning router activation, retrieval feedback logging, knowledge gap detection, confidence scores
 - [ ] **Phase 6: Deployment + Launch** - Render deploy, persistent disk mount, cold-start mitigation, production verification
 
@@ -84,10 +84,10 @@ Plans:
 **Plans**: 4 plans in 2 waves
 
 Plans:
-- [ ] 04-01-PLAN.md — Verify structured error responses (DX-04 already done in Phase 3) [Wave 1]
-- [ ] 04-02-PLAN.md — OpenAPI enrichment: field descriptions, examples, tag metadata, error response docs [Wave 1]
-- [ ] 04-03-PLAN.md — Landing page at `/` with product explanation and docs/quickstart CTAs [Wave 2]
-- [ ] 04-04-PLAN.md — Quickstart guide (QUICKSTART.md + /quickstart HTML route) [Wave 2]
+- [x] 04-01-PLAN.md — Verify structured error responses (DX-04 already done in Phase 3) [Wave 1]
+- [x] 04-02-PLAN.md — OpenAPI enrichment: field descriptions, examples, tag metadata, error response docs [Wave 1]
+- [x] 04-03-PLAN.md — Landing page at `/` with product explanation and docs/quickstart CTAs [Wave 2]
+- [x] 04-04-PLAN.md — Quickstart guide (QUICKSTART.md + /quickstart HTML route) [Wave 2]
 
 ### Phase 5: Self-Improving Memory
 **Goal**: Memory retrieval measurably improves over time without developer intervention — the core differentiator is active and demonstrable
@@ -132,6 +132,6 @@ Plans:
 | 1. Foundation | 4/4 | Complete | 2026-03-14 |
 | 2. Core Memory API | 5/5 | Complete | 2026-03-14 |
 | 3. Auth API + Signup | 3/3 | Complete | 2026-03-14 |
-| 4. Developer Experience | 0/4 | In Progress | - |
+| 4. Developer Experience | 4/4 | Complete | 2026-03-14 |
 | 5. Self-Improving Memory | 0/4 | Not started | - |
 | 6. Deployment + Launch | 0/3 | Not started | - |
