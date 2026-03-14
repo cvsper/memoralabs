@@ -8,7 +8,7 @@ MemoraLabs is a productization of ZimMemory v15 — the core intelligence alread
 
 - [x] **Phase 1: Foundation** - Secure multi-tenant infrastructure: system DB, tenant DB manager, isolation, health endpoint, persistent disk *(completed 2026-03-14)*
 - [x] **Phase 2: Core Memory API** - Port ZimMemory engine to multi-tenant; full memory CRUD, semantic search, entity extraction, decay, deduplication *(completed 2026-03-14)*
-- [ ] **Phase 3: Auth API + Signup** - Tenant management, API key generation/rotation, auth middleware wired end-to-end
+- [x] **Phase 3: Auth API + Signup** - Tenant management, API key generation/rotation, auth middleware wired end-to-end *(completed 2026-03-14)*
 - [ ] **Phase 4: Developer Experience** - Public API docs, landing page, quickstart guide, structured error codes
 - [ ] **Phase 5: Self-Improving Memory** - Q-learning router activation, retrieval feedback logging, knowledge gap detection, confidence scores
 - [ ] **Phase 6: Deployment + Launch** - Render deploy, persistent disk mount, cold-start mitigation, production verification
@@ -64,12 +64,12 @@ Plans:
   2. The plaintext key is never stored — only the SHA-256 hash exists in the database; a database breach does not expose usable keys
   3. Developer can rotate their API key and all previously stored memories are accessible with the new key
   4. Any request missing a valid Bearer token receives a structured 401 JSON error, not a 500 or HTML page
-**Plans**: TBD
+**Plans**: 3 plans in 2 waves
 
 Plans:
-- [ ] 03-01: Signup endpoint — `POST /v1/auth/signup`: create tenant record, generate key, hash+store, return plaintext once
-- [ ] 03-02: Auth middleware — `before_request` hook resolving `Bearer → SHA-256 → tenant_id`; set `g.tenant_id` + `g.tenant_conn`; exempt `/health` and `/v1/auth/signup`
-- [ ] 03-03: Key rotation endpoint — `POST /v1/auth/keys/rotate`: generate new key, invalidate old hash, preserve tenant data
+- [x] 03-01: Signup endpoint — `POST /v1/auth/signup`: create tenant record, generate key, hash+store, return plaintext once [Wave 1]
+- [x] 03-02: Global exception handlers + `last_used_at` tracking [Wave 1]
+- [x] 03-03: Key rotation endpoint — `POST /v1/auth/keys/rotate`: generate new key, invalidate old hash, preserve tenant data [Wave 2]
 
 ### Phase 4: Developer Experience
 **Goal**: A developer unfamiliar with MemoraLabs can read the docs, get an API key, and have a memory stored and recalled within 10 minutes
@@ -131,7 +131,7 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Foundation | 4/4 | ✓ Complete | 2026-03-14 |
 | 2. Core Memory API | 5/5 | ✓ Complete | 2026-03-14 |
-| 3. Auth API + Signup | 0/3 | Not started | - |
+| 3. Auth API + Signup | 3/3 | ✓ Complete | 2026-03-14 |
 | 4. Developer Experience | 0/4 | Not started | - |
 | 5. Self-Improving Memory | 0/4 | Not started | - |
 | 6. Deployment + Launch | 0/3 | Not started | - |
