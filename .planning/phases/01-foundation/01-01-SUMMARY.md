@@ -118,6 +118,20 @@ None - no external service configuration required.
 - `get_tenant_by_key_hash` is the auth resolution entrypoint — Plan 03 (auth middleware) builds directly on it
 - All indexes in place for the hot paths (key_hash lookup, tenant_id scans)
 
+## Self-Check: PASSED
+
+All files verified present on disk. All commits verified in git log.
+
+- app/db/system.py: FOUND
+- app/config.py: FOUND
+- app/models/schemas.py: FOUND
+- migrations/001_system_tables.sql: FOUND
+- tests/test_system_db.py: FOUND
+- requirements.txt: FOUND
+- .env.example: FOUND
+- Commit e86ff06: FOUND
+- Commit 11bf653: FOUND
+
 ---
 *Phase: 01-foundation*
 *Completed: 2026-03-14*
