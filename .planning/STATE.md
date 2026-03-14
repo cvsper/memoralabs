@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-03-14)
 ## Current Position
 
 Phase: 1 of 6 (Foundation)
-Plan: 2 of 4 in current phase (01-01 done, 01-02 done)
+Plan: 3 of 4 in current phase (01-01 done, 01-02 done, 01-03 done)
 Status: In progress
-Last activity: 2026-03-14 — 01-02 complete: tenant DB schema module + 9 passing tests
+Last activity: 2026-03-14 — 01-03 complete: TenantDBManager LRU pool + 14 passing tests
 
-Progress: [██░░░░░░░░] 8%
+Progress: [███░░░░░░░] 12%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 2 (01-01, 01-02)
+- Total plans completed: 3 (01-01, 01-02, 01-03)
 - Average duration: ~2 min/plan
-- Total execution time: ~4 min
+- Total execution time: ~6 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01-foundation | 2 | ~4 min | ~2 min |
+| 01-foundation | 3 | ~6 min | ~2 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (~2 min), 01-02 (~2 min)
-- Trend: Fast — schema/scaffold work
+- Last 5 plans: 01-01 (~2 min), 01-02 (~2 min), 01-03 (~2 min)
+- Trend: Fast — foundation layer work
 
 *Updated after each plan completion*
 
@@ -51,6 +51,9 @@ Key decisions in effect:
 - **01-01 — Email regex not pydantic[email]**: Avoids extra dependency for simple format check.
 - **embedding BLOB in Phase 1**: Added embedding BLOB DEFAULT NULL to memories table now to avoid Phase 2 migration.
 - **init_tenant_db takes open connection**: TenantDBManager owns connection lifecycle; schema module only applies DDL.
+- **01-03 — UUID regex as path-traversal guard**: Only lowercase UUIDs accepted for tenant_id; no filesystem I/O reachable with malicious input.
+- **01-03 — Lock held entire get_connection body**: Prevents duplicate opens for same tenant under concurrent async load.
+- **01-03 — create_tenant_db raises if file exists**: Idempotency is caller responsibility; no silent overwrite.
 
 ### Pending Todos
 
@@ -66,5 +69,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-14
-Stopped at: Completed 01-01-PLAN.md (system DB layer, scaffold, config, 10 passing tests). 01-02 also complete.
+Stopped at: Completed 01-03-PLAN.md (TenantDBManager LRU pool, 14 passing tests, cross-tenant isolation proven)
 Resume file: None
