@@ -219,11 +219,18 @@ class TenantIndexManager:
         if current_count == 0:
             return []
 
-        # Over-fetch to allow for candidate filtering and deleted items
+        # Over-fetch to allow for candidate filtering and deleted items.
+        # Clamp to current_count to avoid hnswlib RuntimeError when many
+        # items are deleted and the result set is smaller than fetch_k.
         fetch_k = min(k * 3, current_count)
-        positions, distances = index.knn_query(
-            query_embedding.reshape(1, -1), k=fetch_k
-        )
+        try:
+            positions, distances = index.knn_query(
+                query_embedding.reshape(1, -1), k=fetch_k
+            )
+        except RuntimeError:
+            # hnswlib raises RuntimeError when ef/M makes it impossible to
+            # return a contiguous 2D result (e.g. all candidates are deleted).
+            return []
 
         results: list[tuple[str, float]] = []
         for pos, dist in zip(positions[0], distances[0]):
