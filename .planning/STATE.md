@@ -57,6 +57,9 @@ Key decisions in effect:
 - **01-03 — create_tenant_db raises if file exists**: Idempotency is caller responsibility; no silent overwrite.
 - [Phase 01-foundation]: monkeypatch both app.config.DATA_DIR and app.main.DATA_DIR in test fixture — lifespan captures the already-imported binding at module load time
 - [Phase 01-foundation]: health router has no auth — will be explicitly exempted in Phase 3 auth middleware
+- **02-01 — Priority-ordered entity extraction**: org > date > standalone location > location-in > person > topic; execution order prevents month names and org names from matching person pattern
+- **02-01 — Starlette TestClient for deps tests**: httpx ASGITransport sends only http scopes, never lifespan — TestClient properly triggers startup/shutdown; portal.call() for async DB setup in sync test context
+- **02-01 — /_test/tenant endpoint in main.py**: permanent test helper exercising Depends(get_tenant); returns only id/email/plan
 - **02-02 — hnswlib RuntimeError on all-deleted search**: knn_query raises RuntimeError when all fetch_k candidates are deleted; caught and returns [] — correct behavior, no crash
 - **02-02 — Rate limit key SHA-256 hashed**: Raw API key never stored in slowapi in-memory store; first 16 hex chars of SHA-256 used as key
 - **02-02 — VECTOR_INDEX_DIR separate from DATA_DIR/tenants**: Per-tenant .idx + .ids.json files at data/indexes/ mirror the data/tenants/ pattern
@@ -76,5 +79,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-14
-Stopped at: Completed 02-02-PLAN.md (EmbeddingClient, TenantIndexManager, slowapi Limiter, app/deps.py, 57/57 tests passing)
+Stopped at: Completed 02-01-PLAN.md (service modules, deps, Pydantic models, 105/105 tests — added missing 48 tests for dedup/decay/entity/deps)
 Resume file: None
