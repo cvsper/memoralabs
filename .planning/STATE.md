@@ -10,16 +10,16 @@ See: .planning/PROJECT.md (updated 2026-03-14)
 ## Current Position
 
 Phase: 4 of 6 (Developer Experience)
-Plan: 2 of ? in phase 04 (done: 04-01, 04-02)
+Plan: 3 of ? in phase 04 (done: 04-01, 04-02, 04-03)
 Status: Phase 4 in progress
-Last activity: 2026-03-14 — 04-02 complete: OpenAPI docs enriched with field descriptions, examples, grouped tags (auth/memory/health), error responses on all endpoints; /_test/tenant hidden; 189/189 tests
+Last activity: 2026-03-14 — 04-03 complete: Landing page at GET / with dark CSS, zero external deps; /static StaticFiles mount; include_in_schema=False; 189/189 tests
 
-Progress: [█████████░] 62%
+Progress: [█████████░] 65%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 14 (01-01, 01-02, 01-03, 01-04, 02-01, 02-02, 02-03, 02-04, 02-05, 03-01, 03-02, 03-03, 04-01, 04-02)
+- Total plans completed: 15 (01-01, 01-02, 01-03, 01-04, 02-01, 02-02, 02-03, 02-04, 02-05, 03-01, 03-02, 03-03, 04-01, 04-02, 04-03)
 - Average duration: ~3 min/plan
 - Total execution time: ~37 min
 
@@ -30,7 +30,7 @@ Progress: [█████████░] 62%
 | 01-foundation | 4 | ~10 min | ~2.5 min |
 | 02-core-memory-api | 5 | ~14 min | ~2.8 min |
 | 03-auth-api-signup | 3 | ~7 min | ~2.3 min |
-| 04-developer-experience | 2 | ~7 min | ~3.5 min |
+| 04-developer-experience | 3 | ~11 min | ~3.7 min |
 
 **Recent Trend:**
 - Last 5 plans: 03-01 (~2 min), 03-02 (~2 min), 03-03 (~3 min), 04-01 (~3 min)
@@ -82,6 +82,9 @@ Key decisions in effect:
 - **04-02 — model_config json_schema_extra for Pydantic v2 examples**: not deprecated singular example= parameter; json_schema_extra with examples list is the Pydantic v2 standard
 - **04-02 — response_model= added to create_memory and search_memory**: was missing; without it FastAPI generates empty {} response schema in docs — critical for DX goal
 - **04-02 — All endpoint docstrings rewritten to user-facing language**: implementation details removed; docstring becomes the endpoint summary in Swagger UI
+- **04-03 — Module-level _LANDING_HTML**: HTML read at import time, not per request — simpler and faster
+- **04-03 — /static mount after all include_router() calls**: StaticFiles mount order matters in FastAPI; late mounting prevents shadowing API routes
+- **04-03 — include_in_schema=False on GET /**: landing page stays out of OpenAPI docs; only API endpoints visible in Swagger UI
 
 ### Pending Todos
 
@@ -97,5 +100,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-14
-Stopped at: Completed 04-02-PLAN.md (OpenAPI enrichment — field descriptions, examples, tags, error responses, 189/189 tests)
+Stopped at: Completed 04-03-PLAN.md (Landing page at GET / — dark CSS, StaticFiles mount, zero external deps, 189/189 tests)
 Resume file: None
