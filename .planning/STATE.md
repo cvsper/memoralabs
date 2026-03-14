@@ -95,6 +95,10 @@ Key decisions in effect:
 - **05-01 — try/except at both search call sites**: logging failure must never degrade search availability
 - [Phase 05]: 05-03 — POST /v1/memory/gaps on memory router not intelligence router: memory router prefix /v1/memory produces correct path; intelligence router prefix /v1/intelligence would produce wrong path
 - [Phase 05]: 05-03 — gap_detection uses extract_entities()/normalize_entity_name() not a new NLP pipeline: consistent with 02-01 entity extraction decision, avoids dependency explosion
+- **05-04 — confidence is separate from score**: score = relevance ranking (cosine + decay), confidence = reliability estimate (4-signal weighted formula)
+- **05-04 — max_cosine tracked as dict for O(1) per-result lookup**: {memory_id: raw_cosine} built from raw_results before the scoring loop
+- **05-04 — fallback path always sets confidence=0.0**: no cosine data available when circuit breaker is open
+- **05-04 — access_count added to SELECT in Step 1**: was not previously fetched; required for engagement signal in confidence formula
 
 ### Pending Todos
 
@@ -110,5 +114,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-14
-Stopped at: Completed 05-03-PLAN.md (Knowledge gap detection — detect_knowledge_gaps service, POST /v1/memory/gaps endpoint, 8 new tests, 227/227 tests)
+Stopped at: Completed 05-04-PLAN.md (Confidence scoring — compute_confidence() 4-signal formula, MemorySearchResult.confidence field, search pipeline integrated, 227/227 tests)
 Resume file: None
