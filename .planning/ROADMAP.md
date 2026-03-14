@@ -27,13 +27,13 @@ MemoraLabs is a productization of ZimMemory v15 — the core intelligence alread
   3. Cross-tenant isolation test passes: querying tenant A's memories from tenant B's connection returns zero results
   4. All database files are written to the persistent disk mount path, not `/tmp`
   5. Keep-alive cron is configured and pings `/health` on schedule
-**Plans**: TBD
+**Plans:** 4 plans
 
 Plans:
-- [ ] 01-01: System DB schema — create `tenants`, `api_keys`, `usage_log` tables with migrations
-- [ ] 01-02: Tenant DB schema — port ZimMemory `memories`, `entities`, `relations` schema to per-tenant SQLite
-- [ ] 01-03: TenantDBManager — LRU connection pool, WAL mode, persistent disk path, isolation enforcement
-- [ ] 01-04: Health endpoint + keep-alive cron setup
+- [ ] 01-01-PLAN.md — System DB schema + project scaffolding (config, requirements, Pydantic models)
+- [ ] 01-02-PLAN.md — Tenant DB schema (memories, entities, relations ported from ZimMemory v15)
+- [ ] 01-03-PLAN.md — TenantDBManager (LRU connection pool, WAL mode, isolation enforcement)
+- [ ] 01-04-PLAN.md — FastAPI app with lifespan, health endpoint, render.yaml, keep-alive docs
 
 ### Phase 2: Core Memory API
 **Goal**: A working memory API — store, search, update, delete — with vector retrieval, entity extraction, temporal decay, and deduplication
@@ -129,7 +129,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/4 | Not started | - |
+| 1. Foundation | 0/4 | Planned | - |
 | 2. Core Memory API | 0/5 | Not started | - |
 | 3. Auth API + Signup | 0/3 | Not started | - |
 | 4. Developer Experience | 0/4 | Not started | - |
