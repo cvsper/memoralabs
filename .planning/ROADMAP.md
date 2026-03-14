@@ -10,7 +10,7 @@ MemoraLabs is a productization of ZimMemory v15 — the core intelligence alread
 - [x] **Phase 2: Core Memory API** - Port ZimMemory engine to multi-tenant; full memory CRUD, semantic search, entity extraction, decay, deduplication *(completed 2026-03-14)*
 - [x] **Phase 3: Auth API + Signup** - Tenant management, API key generation/rotation, auth middleware wired end-to-end *(completed 2026-03-14)*
 - [x] **Phase 4: Developer Experience** - Public API docs, landing page, quickstart guide, structured error codes *(completed 2026-03-14)*
-- [ ] **Phase 5: Self-Improving Memory** - Q-learning router activation, retrieval feedback logging, knowledge gap detection, confidence scores
+- [x] **Phase 5: Self-Improving Memory** - Q-learning router activation, retrieval feedback logging, knowledge gap detection, confidence scores *(completed 2026-03-14)*
 - [ ] **Phase 6: Deployment + Launch** - Render deploy, persistent disk mount, cold-start mitigation, production verification
 
 ---
@@ -98,13 +98,13 @@ Plans:
   2. After sufficient retrieval log accumulation, the Q-learning router's weights shift measurably from their initialized values
   3. `POST /v1/memory/gaps` returns entity patterns that appear in query logs but are absent from stored memories
   4. Search results include a `confidence` field (0.0-1.0) on each returned memory
-**Plans**: TBD
+**Plans**: 4 plans in 2 waves
 
 Plans:
-- [ ] 05-01: Retrieval feedback logging — instrument every search call to append `(query_id, result_ids, timestamp)` to retrieval log table
-- [ ] 05-02: Q-learning router activation — port ZimMemory Q-learning router; wire against retrieval log; define activation threshold (minimum log volume before weights update)
-- [ ] 05-03: Knowledge gap detection endpoint — `POST /v1/memory/gaps`: join entity graph + query log to surface missing knowledge
-- [ ] 05-04: Confidence scores — compute and expose `confidence` on search results from co-occurrence + recency + relation type
+- [x] 05-01-PLAN.md — Retrieval feedback logging: retrieval_log table DDL, log_retrieval service, wired into search pipeline [Wave 1]
+- [x] 05-02-PLAN.md — Q-learning router: Q-table DDL, bandit with activation threshold, router stats endpoint [Wave 2]
+- [x] 05-03-PLAN.md — Knowledge gap detection: entity gap analysis from query logs, POST /v1/memory/gaps [Wave 2]
+- [x] 05-04-PLAN.md — Confidence scores: 4-signal confidence computation on search results [Wave 2]
 
 ### Phase 6: Deployment + Launch
 **Goal**: MemoraLabs is live on Render, survives restarts, and is ready for external developers to sign up
@@ -133,5 +133,5 @@ Plans:
 | 2. Core Memory API | 5/5 | Complete | 2026-03-14 |
 | 3. Auth API + Signup | 3/3 | Complete | 2026-03-14 |
 | 4. Developer Experience | 4/4 | Complete | 2026-03-14 |
-| 5. Self-Improving Memory | 0/4 | Not started | - |
+| 5. Self-Improving Memory | 4/4 | Complete | 2026-03-14 |
 | 6. Deployment + Launch | 0/3 | Not started | - |
