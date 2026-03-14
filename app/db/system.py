@@ -141,6 +141,16 @@ async def get_tenant_by_key_hash(
     return dict(row)
 
 
+async def update_key_last_used(conn: aiosqlite.Connection, key_hash: str) -> None:
+    """Update last_used_at timestamp for the API key. Fire-and-forget."""
+    now = int(time.time())
+    await conn.execute(
+        "UPDATE api_keys SET last_used_at = ? WHERE key_hash = ? AND is_active = 1",
+        (now, key_hash),
+    )
+    await conn.commit()
+
+
 async def log_usage(
     conn: aiosqlite.Connection,
     tenant_id: str,

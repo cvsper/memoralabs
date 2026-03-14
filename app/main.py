@@ -66,6 +66,59 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+
+def _status_to_error_code(status_code: int) -> str:
+    """Map HTTP status code to a machine-readable error code."""
+    codes = {
+        400: "BAD_REQUEST",
+        401: "UNAUTHORIZED",
+        403: "FORBIDDEN",
+        404: "NOT_FOUND",
+        409: "CONFLICT",
+        422: "VALIDATION_ERROR",
+        429: "RATE_LIMITED",
+    }
+    return codes.get(status_code, "INTERNAL_ERROR")
+
+
+@app.exception_handler(StarletteHTTPException)
+async def http_exception_handler(request: Request, exc: StarletteHTTPException):
+    """Ensure all HTTP exceptions return structured JSON (never HTML)."""
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={
+            "error": _status_to_error_code(exc.status_code),
+            "message": exc.detail,
+        },
+        headers=getattr(exc, "headers", None),
+    )
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    """Pydantic validation errors return structured JSON with field details."""
+    return JSONResponse(
+        status_code=422,
+        content={
+            "error": "VALIDATION_ERROR",
+            "message": "Request validation failed",
+            "details": exc.errors(),
+        },
+    )
+
+
+@app.exception_handler(Exception)
+async def unhandled_exception_handler(request: Request, exc: Exception):
+    """Catch-all: never leak stack traces to clients."""
+    return JSONResponse(
+        status_code=500,
+        content={
+            "error": "INTERNAL_ERROR",
+            "message": "An unexpected error occurred",
+        },
+    )
+
+
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 

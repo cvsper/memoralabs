@@ -14,7 +14,7 @@ from typing import Annotated
 import aiosqlite
 from fastapi import Depends, HTTPException, Request, status
 
-from app.db.system import get_tenant_by_key_hash
+from app.db.system import get_tenant_by_key_hash, update_key_last_used
 
 
 def _hash_api_key(raw_key: str) -> str:
@@ -68,6 +68,12 @@ async def get_tenant(request: Request) -> dict:
             detail="Invalid or inactive API key",
             headers={"WWW-Authenticate": "Bearer"},
         )
+
+    # Fire-and-forget: update last_used_at (non-blocking, best effort)
+    try:
+        await update_key_last_used(request.app.state.system_db, key_hash)
+    except Exception:
+        pass  # Never fail auth because of usage tracking
 
     return tenant
 
