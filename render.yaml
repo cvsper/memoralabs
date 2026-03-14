@@ -1,17 +1,14 @@
 # MemoraLabs Render Deployment
-# Persistent disk at /data -- NOT available during build
+# Docker runtime — hnswlib requires C++ build tools not in native Python runtime.
+# Persistent disk at /data -- NOT available during build.
 # Starter plan does NOT spin down (no free-tier sleep).
-# UptimeRobot (free) is for monitoring only -- configure GET /health every 10 minutes.
-# UptimeRobot URL: https://memoralabs.onrender.com/health
 
 services:
   - type: web
     name: memoralabs-api
-    runtime: python
+    runtime: docker
     plan: starter
     region: oregon
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /health
     disk:
       name: memoralabs-data
@@ -20,7 +17,5 @@ services:
     envVars:
       - key: DATA_DIR
         value: /data
-      - key: PYTHON_VERSION
-        value: "3.11"
       - key: FIREWORKS_API_KEY
         sync: false
