@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-03-14)
 
 ## Current Position
 
-Phase: 5 of 6 (Self-Improving Memory)
-Plan: 4 of ? in phase 05 (done: 05-01, 05-02, 05-03, 05-04)
-Status: Phase 5 in progress
-Last activity: 2026-03-14 — 05-04 complete: confidence scoring service (4-signal formula), MemorySearchResult.confidence field, search pipeline integrated, 227/227 tests
+Phase: 6 of 6 (Deployment & Launch)
+Plan: 1 of ? in phase 06 (done: 06-01)
+Status: Phase 6 in progress
+Last activity: 2026-03-14 — 06-01 complete: render.yaml production config (region, healthCheckPath, maxShutdownDelaySeconds, FIREWORKS_API_KEY), disk-mount guard in lifespan, 229/229 tests
 
-Progress: [█████████░] 72%
+Progress: [█████████░] 78%
 
 ## Performance Metrics
 
@@ -32,6 +32,7 @@ Progress: [█████████░] 72%
 | 03-auth-api-signup | 3 | ~7 min | ~2.3 min |
 | 04-developer-experience | 4 | ~15 min | ~3.75 min |
 | 05-self-improving-memory | 4 | ~14 min | ~3.5 min |
+| 06-deployment-launch | 1 | ~2 min | ~2 min |
 
 **Recent Trend:**
 - Last 5 plans: 03-01 (~2 min), 03-02 (~2 min), 03-03 (~3 min), 04-01 (~3 min)
@@ -99,6 +100,9 @@ Key decisions in effect:
 - **05-04 — max_cosine tracked as dict for O(1) per-result lookup**: {memory_id: raw_cosine} built from raw_results before the scoring loop
 - **05-04 — fallback path always sets confidence=0.0**: no cosine data available when circuit breaker is open
 - **05-04 — access_count added to SELECT in Step 1**: was not previously fetched; required for engagement signal in confidence formula
+- **06-01 — FIREWORKS_API_KEY sync: false**: secret entered in Render Dashboard, never committed to repo
+- **06-01 — maxShutdownDelaySeconds: 30**: matches SQLite WAL checkpoint window for zero-data-loss graceful shutdown
+- **06-01 — Disk-mount guard scoped to RENDER env var**: no impact on local dev or CI test runs; sys.exit(1) on unmounted disk
 
 ### Pending Todos
 
@@ -114,5 +118,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-14
-Stopped at: Completed 05-04-PLAN.md (Confidence scoring — compute_confidence() 4-signal formula, MemorySearchResult.confidence field, search pipeline integrated, 227/227 tests)
+Stopped at: Completed 06-01-PLAN.md (render.yaml production config, disk-mount guard in lifespan, 229/229 tests)
 Resume file: None
