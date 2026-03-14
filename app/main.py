@@ -1,9 +1,11 @@
 from contextlib import asynccontextmanager
+from pathlib import Path
 from typing import Annotated
 
 from fastapi import Depends, FastAPI, Request
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -148,6 +150,15 @@ async def unhandled_exception_handler(request: Request, exc: Exception):
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
+_LANDING_HTML = (Path(__file__).parent / "static" / "landing.html").read_text()
+
+
+@app.get("/", response_class=HTMLResponse, include_in_schema=False)
+async def landing_page():
+    """Serve the landing page."""
+    return _LANDING_HTML
+
+
 app.include_router(auth_router)
 app.include_router(health_router)
 app.include_router(memory_router)
@@ -165,3 +176,8 @@ async def _test_get_tenant(
 ) -> dict:
     """Return resolved tenant info. Used by test_deps.py to verify auth."""
     return {"id": tenant["id"], "email": tenant["email"], "plan": tenant["plan"]}
+
+
+# Mount static files last — must come after all route/router definitions so it
+# does not shadow any API routes.
+app.mount("/static", StaticFiles(directory=str(Path(__file__).parent / "static")), name="static")
