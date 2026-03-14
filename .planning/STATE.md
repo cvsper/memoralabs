@@ -5,33 +5,34 @@
 See: .planning/PROJECT.md (updated 2026-03-14)
 
 **Core value:** Self-improving memory retrieval — agents that get smarter over time, not just bigger
-**Current focus:** Phase 1 — Foundation
+**Current focus:** Phase 2 — Core Memory API
 
 ## Current Position
 
-Phase: 1 of 6 (Foundation)
-Plan: 4 of 4 in current phase (01-01 done, 01-02 done, 01-03 done, 01-04 done)
-Status: Phase 1 complete
-Last activity: 2026-03-14 — 01-04 complete: FastAPI app wiring, /health, render.yaml, 37/37 tests
+Phase: 2 of 6 (Core Memory API)
+Plan: 2 of 5 in current phase (02-01 done, 02-02 done)
+Status: In progress
+Last activity: 2026-03-14 — 02-02 complete: EmbeddingClient, TenantIndexManager, slowapi Limiter, 57/57 tests
 
-Progress: [████░░░░░░] 17%
+Progress: [████░░░░░░] 23%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 4 (01-01, 01-02, 01-03, 01-04)
-- Average duration: ~2.5 min/plan
-- Total execution time: ~10 min
+- Total plans completed: 6 (01-01, 01-02, 01-03, 01-04, 02-01, 02-02)
+- Average duration: ~3 min/plan
+- Total execution time: ~15 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-foundation | 4 | ~10 min | ~2.5 min |
+| 02-core-memory-api | 2 | ~5 min | ~2.5 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (~2 min), 01-02 (~2 min), 01-03 (~2 min), 01-04 (~4 min)
-- Trend: Fast — foundation layer work
+- Last 5 plans: 01-02 (~2 min), 01-03 (~2 min), 01-04 (~4 min), 02-01 (~2 min), 02-02 (~5 min)
+- Trend: Consistent — infrastructure layer work
 
 *Updated after each plan completion*
 
@@ -56,6 +57,10 @@ Key decisions in effect:
 - **01-03 — create_tenant_db raises if file exists**: Idempotency is caller responsibility; no silent overwrite.
 - [Phase 01-foundation]: monkeypatch both app.config.DATA_DIR and app.main.DATA_DIR in test fixture — lifespan captures the already-imported binding at module load time
 - [Phase 01-foundation]: health router has no auth — will be explicitly exempted in Phase 3 auth middleware
+- **02-02 — hnswlib RuntimeError on all-deleted search**: knn_query raises RuntimeError when all fetch_k candidates are deleted; caught and returns [] — correct behavior, no crash
+- **02-02 — Rate limit key SHA-256 hashed**: Raw API key never stored in slowapi in-memory store; first 16 hex chars of SHA-256 used as key
+- **02-02 — VECTOR_INDEX_DIR separate from DATA_DIR/tenants**: Per-tenant .idx + .ids.json files at data/indexes/ mirror the data/tenants/ pattern
+- **02-02 — INITIAL_MAX_ELEMENTS=10,000 per tenant**: 10x headroom over free plan 1,000 limit; resize at 80% with 2x growth factor
 
 ### Pending Todos
 
@@ -71,5 +76,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-14
-Stopped at: Completed 01-04-PLAN.md (FastAPI app wiring, /health, render.yaml, 37/37 tests passing — Phase 1 complete)
+Stopped at: Completed 02-02-PLAN.md (EmbeddingClient, TenantIndexManager, slowapi Limiter, app/deps.py, 57/57 tests passing)
 Resume file: None

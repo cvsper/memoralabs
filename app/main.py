@@ -1,7 +1,8 @@
 import hashlib
 from contextlib import asynccontextmanager
+from typing import Annotated
 
-from fastapi import FastAPI, Request
+from fastapi import Depends, FastAPI, Request
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
@@ -17,6 +18,7 @@ from app.config import (
 )
 from app.db.manager import TenantDBManager
 from app.db.system import init_system_db
+from app.deps import get_tenant
 from app.routers.health import router as health_router
 from app.services.embedding import EmbeddingClient
 from app.services.vector_index import TenantIndexManager
@@ -79,3 +81,17 @@ app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 app.include_router(health_router)
+
+
+# ---------------------------------------------------------------------------
+# Test helper endpoint — exercises Depends(get_tenant).
+# Used by tests/test_deps.py; returns tenant id/email/plan for verification.
+# ---------------------------------------------------------------------------
+
+
+@app.get("/_test/tenant")
+async def _test_get_tenant(
+    tenant: Annotated[dict, Depends(get_tenant)],
+) -> dict:
+    """Return resolved tenant info. Used by test_deps.py to verify auth."""
+    return {"id": tenant["id"], "email": tenant["email"], "plan": tenant["plan"]}
