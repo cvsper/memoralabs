@@ -5,34 +5,35 @@
 See: .planning/PROJECT.md (updated 2026-03-14)
 
 **Core value:** Self-improving memory retrieval — agents that get smarter over time, not just bigger
-**Current focus:** Phase 2 — Core Memory API
+**Current focus:** Phase 3 — Auth API & Signup
 
 ## Current Position
 
-Phase: 2 of 6 (Core Memory API)
-Plan: 5 of 5 in current phase (02-01 done, 02-02 done, 02-03 done, 02-04 done, 02-05 done)
-Status: Phase complete
-Last activity: 2026-03-14 — 02-05 complete: POST /v1/memory/search (metadata-first hybrid search, AND/OR filtering, temporal decay, rate limiting), 162/162 tests
+Phase: 3 of 6 (Auth API & Signup)
+Plan: 2 of 3 in current phase (03-01 done, 03-02 done)
+Status: In progress
+Last activity: 2026-03-14 — 03-02 complete: global exception handlers (401/422/500 structured JSON), last_used_at tracking, 176/176 tests
 
-Progress: [███████░░░] 42%
+Progress: [████████░░] 50%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 8 (01-01, 01-02, 01-03, 01-04, 02-01, 02-02, 02-03, 02-04)
+- Total plans completed: 10 (01-01, 01-02, 01-03, 01-04, 02-01, 02-02, 02-03, 02-04, 02-05, 03-01, 03-02)
 - Average duration: ~3 min/plan
-- Total execution time: ~21 min
+- Total execution time: ~27 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-foundation | 4 | ~10 min | ~2.5 min |
-| 02-core-memory-api | 4 | ~11 min | ~2.75 min |
+| 02-core-memory-api | 5 | ~14 min | ~2.8 min |
+| 03-auth-api-signup | 2 (so far) | ~4 min | ~2 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-04 (~4 min), 02-01 (~2 min), 02-02 (~5 min), 02-03 (~3 min), 02-04 (~3 min)
-- Trend: Consistent — ~3 min/plan average
+- Last 5 plans: 02-03 (~3 min), 02-04 (~3 min), 02-05 (~2 min), 03-01 (~2 min), 03-02 (~2 min)
+- Trend: Consistent — ~2-3 min/plan average
 
 *Updated after each plan completion*
 
@@ -69,6 +70,9 @@ Key decisions in effect:
 - **02-03 — Cosine dedup runs post-embedding in background**: soft-deletes new memory only if near-duplicate found (>=0.95 similarity), original preserved
 - **02-04 — Entity retrieval via relations.memory_id not memory_entities join table**: actual schema links entities to memories through relations; no memory_entities table exists
 - **02-04 — /entities route before /{id} route**: FastAPI matches in registration order; entities sub-path must be registered first
+- **03-02 — exc.headers passthrough in http_exception_handler**: preserves WWW-Authenticate: Bearer on 401 responses without changes to deps.py raises
+- **03-02 — update_key_last_used wrapped in try/except**: auth must never fail or slow due to usage tracking
+- **03-02 — Error test fixture must call create_tenant_db**: GET memory endpoints 500 without tenant DB, regardless of system DB records existing
 
 ### Pending Todos
 
@@ -84,5 +88,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-14
-Stopped at: Completed 02-04-PLAN.md (GET/PATCH/DELETE /v1/memory + GET /v1/memory/{id}/entities, 144/144 tests)
+Stopped at: Completed 03-02-PLAN.md (global exception handlers, last_used_at tracking, 176/176 tests)
 Resume file: None
