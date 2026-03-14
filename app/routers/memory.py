@@ -84,7 +84,7 @@ async def _generate_embedding(
         await conn.commit()
 
         # Add to vector index
-        app_state.index_manager.add_vector(tenant_id, memory_id, embedding)
+        await app_state.index_manager.add_vector(tenant_id, memory_id, embedding)
 
         # Post-embedding cosine dedup check
         # Fetch embeddings of other non-deleted memories for this tenant
