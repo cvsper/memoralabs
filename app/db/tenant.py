@@ -106,6 +106,23 @@ CREATE INDEX IF NOT EXISTS idx_relations_memory ON relations(memory_id);
 
 INSERT OR IGNORE INTO schema_version (version, applied_at, description)
 VALUES (1, strftime('%s', 'now'), '002_tenant_tables');
+
+CREATE TABLE IF NOT EXISTS retrieval_log (
+    id TEXT PRIMARY KEY,
+    query TEXT NOT NULL,
+    query_hash TEXT NOT NULL,
+    result_ids TEXT DEFAULT '[]',
+    scores TEXT DEFAULT '[]',
+    strategy TEXT DEFAULT 'default',
+    hit INTEGER DEFAULT NULL,
+    created_at INTEGER NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_rlog_created ON retrieval_log(created_at);
+CREATE INDEX IF NOT EXISTS idx_rlog_hash ON retrieval_log(query_hash);
+
+INSERT OR IGNORE INTO schema_version (version, applied_at, description)
+VALUES (2, strftime('%s', 'now'), '005_retrieval_log');
 """
 
 
