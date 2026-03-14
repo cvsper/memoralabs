@@ -23,6 +23,9 @@ async def client(tmp_path, monkeypatch):
     # Also patch the imported reference in main.py so lifespan uses tmp_path
     import app.main as main_module
     monkeypatch.setattr(main_module, "DATA_DIR", tmp_path)
+    # Patch FIREWORKS_API_KEY in health router so embedding_configured=True in tests
+    import app.routers.health as health_module
+    monkeypatch.setattr(health_module, "FIREWORKS_API_KEY", "test-key")
     async with AsyncClient(
         transport=ASGITransport(app=app),
         base_url="http://test",
@@ -55,6 +58,41 @@ async def test_health_timestamp_is_utc_iso(client):
     # Should not raise
     parsed = datetime.fromisoformat(ts)
     assert parsed is not None
+
+
+@pytest.mark.anyio
+async def test_health_checks_fields(client):
+    """GET /health returns checks sub-object with expected keys."""
+    response = await client.get("/health")
+    data = response.json()
+    checks = data["checks"]
+    assert "disk_mounted" in checks
+    assert "disk_path" in checks
+    assert "embedding_configured" in checks
+    # disk_mounted is None locally (RENDER env not set)
+    assert checks["disk_mounted"] is None
+    # embedding_configured is True because fixture patches FIREWORKS_API_KEY
+    assert checks["embedding_configured"] is True
+
+
+@pytest.mark.anyio
+async def test_health_degraded_when_no_embedding_key(tmp_path, monkeypatch):
+    """GET /health returns degraded when FIREWORKS_API_KEY is not set."""
+    monkeypatch.setenv("DATA_DIR", str(tmp_path))
+    import app.config as config
+    monkeypatch.setattr(config, "DATA_DIR", tmp_path)
+    import app.main as main_module
+    monkeypatch.setattr(main_module, "DATA_DIR", tmp_path)
+    # Ensure FIREWORKS_API_KEY is empty
+    import app.routers.health as health_module
+    monkeypatch.setattr(health_module, "FIREWORKS_API_KEY", "")
+    async with AsyncClient(
+        transport=ASGITransport(app=app),
+        base_url="http://test",
+    ) as ac:
+        response = await ac.get("/health")
+        assert response.status_code == 200  # always 200
+        assert response.json()["status"] == "degraded"
 
 
 @pytest.mark.anyio
