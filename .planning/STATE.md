@@ -10,27 +10,27 @@ See: .planning/PROJECT.md (updated 2026-03-14)
 ## Current Position
 
 Phase: 1 of 6 (Foundation)
-Plan: 3 of 4 in current phase (01-01 done, 01-02 done, 01-03 done)
-Status: In progress
-Last activity: 2026-03-14 — 01-03 complete: TenantDBManager LRU pool + 14 passing tests
+Plan: 4 of 4 in current phase (01-01 done, 01-02 done, 01-03 done, 01-04 done)
+Status: Phase 1 complete
+Last activity: 2026-03-14 — 01-04 complete: FastAPI app wiring, /health, render.yaml, 37/37 tests
 
-Progress: [███░░░░░░░] 12%
+Progress: [████░░░░░░] 17%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 3 (01-01, 01-02, 01-03)
-- Average duration: ~2 min/plan
-- Total execution time: ~6 min
+- Total plans completed: 4 (01-01, 01-02, 01-03, 01-04)
+- Average duration: ~2.5 min/plan
+- Total execution time: ~10 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01-foundation | 3 | ~6 min | ~2 min |
+| 01-foundation | 4 | ~10 min | ~2.5 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (~2 min), 01-02 (~2 min), 01-03 (~2 min)
+- Last 5 plans: 01-01 (~2 min), 01-02 (~2 min), 01-03 (~2 min), 01-04 (~4 min)
 - Trend: Fast — foundation layer work
 
 *Updated after each plan completion*
@@ -54,6 +54,8 @@ Key decisions in effect:
 - **01-03 — UUID regex as path-traversal guard**: Only lowercase UUIDs accepted for tenant_id; no filesystem I/O reachable with malicious input.
 - **01-03 — Lock held entire get_connection body**: Prevents duplicate opens for same tenant under concurrent async load.
 - **01-03 — create_tenant_db raises if file exists**: Idempotency is caller responsibility; no silent overwrite.
+- [Phase 01-foundation]: monkeypatch both app.config.DATA_DIR and app.main.DATA_DIR in test fixture — lifespan captures the already-imported binding at module load time
+- [Phase 01-foundation]: health router has no auth — will be explicitly exempted in Phase 3 auth middleware
 
 ### Pending Todos
 
@@ -61,7 +63,7 @@ None yet.
 
 ### Blockers/Concerns
 
-- **Render persistent disk**: Mount path and volume sizing must be verified in Render docs before Phase 1 deployment. $7/mo disk is confirmed necessary.
+- **Render persistent disk**: [RESOLVED 01-04] render.yaml configured with mountPath: /data, sizeGB: 1. Plan: starter. Verify in Render dashboard before first deploy.
 - **Fireworks.ai rate limits**: Free tier is 10 RPM without payment method. Async queue is mandatory from Phase 2. Per-tenant pre-limit required before any Fireworks call.
 - **FastAPI exact version**: PyPI page inaccessible during research. Run `pip index versions fastapi` before pinning in requirements.txt.
 - **Q-learning activation threshold**: No validated heuristic for minimum retrieval log volume before Q-learning improves vs. degrades results. Research needed before Phase 5.
@@ -69,5 +71,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-14
-Stopped at: Completed 01-03-PLAN.md (TenantDBManager LRU pool, 14 passing tests, cross-tenant isolation proven)
+Stopped at: Completed 01-04-PLAN.md (FastAPI app wiring, /health, render.yaml, 37/37 tests passing — Phase 1 complete)
 Resume file: None
