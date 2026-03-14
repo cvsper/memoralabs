@@ -25,6 +25,7 @@ from starlette.responses import JSONResponse
 from app.db.system import log_usage
 from app.deps import get_tenant
 from app.limiter import limiter
+from app.models.intelligence import GapDetectionRequest, GapDetectionResponse
 from app.models.memory import (
     MemoryCreate,
     MemoryListResponse,
@@ -36,6 +37,7 @@ from app.models.memory import (
 )
 from app.services.dedup import check_cosine_duplicate, text_hash
 from app.services.entity_extraction import process_entities_for_memory
+from app.services.gap_detection import detect_knowledge_gaps
 from app.services.search import count_tenant_memories, search_memories
 
 logger = logging.getLogger(__name__)
@@ -362,6 +364,48 @@ async def search_memory(
         memories_used=memories_used,
         memories_limit=memories_limit,
     )
+
+
+# ---------------------------------------------------------------------------
+# POST /v1/memory/gaps — knowledge gap detection
+# IMPORTANT: Defined before GET /v1/memory/{memory_id} to avoid path collision.
+# ---------------------------------------------------------------------------
+
+
+@router.post(
+    "/memory/gaps",
+    response_model=GapDetectionResponse,
+    tags=["intelligence"],
+    responses={
+        401: {"description": "Missing or invalid API key"},
+        429: {"description": "Rate limit exceeded (30/minute)"},
+    },
+)
+@limiter.limit("30/minute")
+async def detect_gaps(
+    body: GapDetectionRequest,
+    request: Request,
+    tenant: dict = Depends(get_tenant),
+):
+    """Detect knowledge gaps — entities frequently queried but absent from memory.
+
+    Scans the retrieval log for the specified time window and identifies
+    entity patterns that appear in search queries but have no matching
+    stored memory entities. Useful for identifying what your AI agents
+    are asking about but don't know.
+    """
+    conn = await request.app.state.tenant_manager.get_connection(tenant["id"])
+    result = await detect_knowledge_gaps(conn, body.days, body.min_mentions)
+
+    await log_usage(
+        request.app.state.system_db,
+        tenant["id"],
+        "intelligence.gaps",
+        "/v1/memory/gaps",
+        200,
+    )
+
+    return GapDetectionResponse(**result)
 
 
 # ---------------------------------------------------------------------------
