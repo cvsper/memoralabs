@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-03-14)
 ## Current Position
 
 Phase: 2 of 6 (Core Memory API)
-Plan: 3 of 5 in current phase (02-01 done, 02-02 done, 02-03 done)
+Plan: 4 of 5 in current phase (02-01 done, 02-02 done, 02-03 done, 02-04 done)
 Status: In progress
-Last activity: 2026-03-14 — 02-03 complete: POST /v1/memory, dedup, background tasks, rate limiting, 118/118 tests
+Last activity: 2026-03-14 — 02-04 complete: GET/PATCH/DELETE /v1/memory + entities endpoint (RETR-03), 144/144 tests
 
-Progress: [█████░░░░░] 30%
+Progress: [██████░░░░] 36%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 7 (01-01, 01-02, 01-03, 01-04, 02-01, 02-02, 02-03)
+- Total plans completed: 8 (01-01, 01-02, 01-03, 01-04, 02-01, 02-02, 02-03, 02-04)
 - Average duration: ~3 min/plan
-- Total execution time: ~18 min
+- Total execution time: ~21 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-foundation | 4 | ~10 min | ~2.5 min |
-| 02-core-memory-api | 3 | ~8 min | ~2.7 min |
+| 02-core-memory-api | 4 | ~11 min | ~2.75 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-03 (~2 min), 01-04 (~4 min), 02-01 (~2 min), 02-02 (~5 min), 02-03 (~3 min)
+- Last 5 plans: 01-04 (~4 min), 02-01 (~2 min), 02-02 (~5 min), 02-03 (~3 min), 02-04 (~3 min)
 - Trend: Consistent — ~3 min/plan average
 
 *Updated after each plan completion*
@@ -67,6 +67,8 @@ Key decisions in effect:
 - **02-03 — Shared app/limiter.py module**: limiter extracted from app.main to avoid circular import when routers import @limiter.limit decorator
 - **02-03 — JSONResponse for duplicate 200**: endpoint declares status_code=201; explicit JSONResponse(status_code=200) required to override per-response
 - **02-03 — Cosine dedup runs post-embedding in background**: soft-deletes new memory only if near-duplicate found (>=0.95 similarity), original preserved
+- **02-04 — Entity retrieval via relations.memory_id not memory_entities join table**: actual schema links entities to memories through relations; no memory_entities table exists
+- **02-04 — /entities route before /{id} route**: FastAPI matches in registration order; entities sub-path must be registered first
 
 ### Pending Todos
 
@@ -82,5 +84,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-14
-Stopped at: Completed 02-03-PLAN.md (POST /v1/memory endpoint, circular import fix via app/limiter.py, 118/118 tests)
+Stopped at: Completed 02-04-PLAN.md (GET/PATCH/DELETE /v1/memory + GET /v1/memory/{id}/entities, 144/144 tests)
 Resume file: None
