@@ -1,11 +1,9 @@
-import hashlib
 from contextlib import asynccontextmanager
 from typing import Annotated
 
 from fastapi import Depends, FastAPI, Request
-from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
-from slowapi.util import get_remote_address
 
 from app.config import (
     DATA_DIR,
@@ -19,24 +17,11 @@ from app.config import (
 from app.db.manager import TenantDBManager
 from app.db.system import init_system_db
 from app.deps import get_tenant
+from app.limiter import limiter
 from app.routers.health import router as health_router
+from app.routers.memory import router as memory_router
 from app.services.embedding import EmbeddingClient
 from app.services.vector_index import TenantIndexManager
-
-
-def get_tenant_key(request: Request) -> str:
-    """Rate limit by tenant API key hash (or IP as fallback).
-
-    Uses the first 16 hex chars of the SHA-256 of the Bearer token so we
-    never store the raw key in the rate limiter's in-memory store.
-    """
-    auth = request.headers.get("Authorization", "")
-    if auth.startswith("Bearer "):
-        return hashlib.sha256(auth[7:].encode()).hexdigest()[:16]
-    return get_remote_address(request)
-
-
-limiter = Limiter(key_func=get_tenant_key)
 
 
 @asynccontextmanager
@@ -81,6 +66,7 @@ app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 app.include_router(health_router)
+app.include_router(memory_router)
 
 
 # ---------------------------------------------------------------------------
