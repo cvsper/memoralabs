@@ -154,6 +154,13 @@ class MemorySearchResult(BaseModel):
     id: str = Field(description="Unique memory identifier (UUID)")
     text: str = Field(description="The stored memory text")
     score: float = Field(description="Relevance score (0.0-1.0, higher is more relevant)")
+    confidence: float = Field(
+        default=0.0,
+        ge=0.0,
+        le=1.0,
+        description="Confidence estimate (0.0-1.0) based on similarity, entity overlap, engagement, and freshness. "
+        "Distinct from score: score measures relevance ranking, confidence measures result reliability.",
+    )
     metadata: Optional[dict[str, Any]] = Field(
         None, description="Key-value metadata attached to this memory"
     )
@@ -171,6 +178,7 @@ class MemorySearchResult(BaseModel):
                     "id": "3f7a2b1c-4e5d-6789-abcd-ef0123456789",
                     "text": "The user prefers dark mode and metric units",
                     "score": 0.92,
+                    "confidence": 0.85,
                     "metadata": {"source": "preferences"},
                     "user_id": "user_42",
                     "agent_id": "assistant_1",
@@ -201,6 +209,7 @@ class MemorySearchResponse(BaseModel):
                             "id": "3f7a2b1c-4e5d-6789-abcd-ef0123456789",
                             "text": "The user prefers dark mode and metric units",
                             "score": 0.92,
+                            "confidence": 0.85,
                             "metadata": {"source": "preferences"},
                             "user_id": "user_42",
                             "agent_id": None,
