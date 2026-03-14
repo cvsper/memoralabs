@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-03-14)
 
 **Core value:** Self-improving memory retrieval — agents that get smarter over time, not just bigger
-**Current focus:** Phase 3 — Auth API & Signup
+**Current focus:** Phase 4 — next phase
 
 ## Current Position
 
-Phase: 3 of 6 (Auth API & Signup)
-Plan: 2 of 3 in current phase (03-01 done, 03-02 done)
-Status: In progress
-Last activity: 2026-03-14 — 03-02 complete: global exception handlers (401/422/500 structured JSON), last_used_at tracking, 176/176 tests
+Phase: 3 of 6 (Auth API & Signup) — COMPLETE
+Plan: 3 of 3 in phase 03 (all done: 03-01, 03-02, 03-03)
+Status: Phase 3 complete — ready for Phase 4
+Last activity: 2026-03-14 — 03-03 complete: POST /v1/auth/keys/rotate endpoint, 7 rotation tests, signup now inits tenant DB, 183/183 tests
 
-Progress: [████████░░] 50%
+Progress: [█████████░] 58%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 10 (01-01, 01-02, 01-03, 01-04, 02-01, 02-02, 02-03, 02-04, 02-05, 03-01, 03-02)
+- Total plans completed: 12 (01-01, 01-02, 01-03, 01-04, 02-01, 02-02, 02-03, 02-04, 02-05, 03-01, 03-02, 03-03)
 - Average duration: ~3 min/plan
-- Total execution time: ~27 min
+- Total execution time: ~30 min
 
 **By Phase:**
 
@@ -29,10 +29,10 @@ Progress: [████████░░] 50%
 |-------|-------|-------|----------|
 | 01-foundation | 4 | ~10 min | ~2.5 min |
 | 02-core-memory-api | 5 | ~14 min | ~2.8 min |
-| 03-auth-api-signup | 2 (so far) | ~4 min | ~2 min |
+| 03-auth-api-signup | 3 | ~7 min | ~2.3 min |
 
 **Recent Trend:**
-- Last 5 plans: 02-03 (~3 min), 02-04 (~3 min), 02-05 (~2 min), 03-01 (~2 min), 03-02 (~2 min)
+- Last 5 plans: 02-04 (~3 min), 02-05 (~2 min), 03-01 (~2 min), 03-02 (~2 min), 03-03 (~3 min)
 - Trend: Consistent — ~2-3 min/plan average
 
 *Updated after each plan completion*
@@ -73,6 +73,9 @@ Key decisions in effect:
 - **03-02 — exc.headers passthrough in http_exception_handler**: preserves WWW-Authenticate: Bearer on 401 responses without changes to deps.py raises
 - **03-02 — update_key_last_used wrapped in try/except**: auth must never fail or slow due to usage tracking
 - **03-02 — Error test fixture must call create_tenant_db**: GET memory endpoints 500 without tenant DB, regardless of system DB records existing
+- **03-03 — deactivate_keys_for_tenant deactivates ALL keys**: no key accumulation after rotation; exactly one active key always
+- **03-03 — signup calls create_tenant_db**: tenant DB initialised at signup so POST /v1/memory works immediately; without this, first memory POST returns 500
+- **03-03 — rotation tests use signup API for setup**: full-flow integration tests rather than raw DB fixtures; caught the create_tenant_db bug in the process
 
 ### Pending Todos
 
@@ -88,5 +91,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-14
-Stopped at: Completed 03-02-PLAN.md (global exception handlers, last_used_at tracking, 176/176 tests)
+Stopped at: Completed 03-03-PLAN.md (key rotation endpoint, 7 rotation tests, 183/183 tests, Phase 3 complete)
 Resume file: None
