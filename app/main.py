@@ -97,12 +97,20 @@ async def http_exception_handler(request: Request, exc: StarletteHTTPException):
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     """Pydantic validation errors return structured JSON with field details."""
+    # Pydantic v2 error dicts may contain non-serializable ctx values (e.g. ValueError).
+    # Stringify ctx entries so the response is always valid JSON.
+    def _safe_error(e: dict) -> dict:
+        safe = {k: v for k, v in e.items() if k != "ctx"}
+        if "ctx" in e:
+            safe["ctx"] = {k: str(v) for k, v in e["ctx"].items()}
+        return safe
+
     return JSONResponse(
         status_code=422,
         content={
             "error": "VALIDATION_ERROR",
             "message": "Request validation failed",
-            "details": exc.errors(),
+            "details": [_safe_error(e) for e in exc.errors()],
         },
     )
 
