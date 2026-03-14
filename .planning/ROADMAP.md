@@ -11,7 +11,7 @@ MemoraLabs is a productization of ZimMemory v15 — the core intelligence alread
 - [x] **Phase 3: Auth API + Signup** - Tenant management, API key generation/rotation, auth middleware wired end-to-end *(completed 2026-03-14)*
 - [x] **Phase 4: Developer Experience** - Public API docs, landing page, quickstart guide, structured error codes *(completed 2026-03-14)*
 - [x] **Phase 5: Self-Improving Memory** - Q-learning router activation, retrieval feedback logging, knowledge gap detection, confidence scores *(completed 2026-03-14)*
-- [ ] **Phase 6: Deployment + Launch** - Render deploy, persistent disk mount, cold-start mitigation, production verification
+- [x] **Phase 6: Deployment + Launch** - Render deploy, persistent disk mount, cold-start mitigation, production verification *(completed 2026-03-14)*
 
 ---
 
@@ -114,12 +114,12 @@ Plans:
   1. Service is accessible at a public Render URL and returns a valid response to unauthenticated `GET /health`
   2. After a simulated Render restart, all previously stored tenant memories are intact and queryable
   3. Cold-start mitigation is active — a request arriving after 15 minutes of inactivity does not result in a 25-60 second hang
-**Plans**: TBD
+**Plans**: 3 plans in 2 waves
 
 Plans:
-- [ ] 06-01: Render deployment — configure `render.yaml`, persistent disk mount, environment variables, startup command
-- [ ] 06-02: Production hardening — verify disk mount path on boot, test restart recovery, confirm UptimeRobot keep-alive active
-- [ ] 06-03: Launch verification — end-to-end smoke test: signup -> store -> search -> gap detection from fresh external IP
+- [x] 06-01-PLAN.md — Render deployment config: render.yaml completion, Docker runtime, startup disk-mount verification [Wave 1]
+- [x] 06-02-PLAN.md — Production hardening: enhanced health endpoint with infra status + post-deploy smoke-test script [Wave 1]
+- [x] 06-03-PLAN.md — Launch verification: deploy to Render, run smoke test, verify data persistence [Wave 2]
 
 ---
 
@@ -134,4 +134,4 @@ Plans:
 | 3. Auth API + Signup | 3/3 | Complete | 2026-03-14 |
 | 4. Developer Experience | 4/4 | Complete | 2026-03-14 |
 | 5. Self-Improving Memory | 4/4 | Complete | 2026-03-14 |
-| 6. Deployment + Launch | 0/3 | Not started | - |
+| 6. Deployment + Launch | 3/3 | Complete | 2026-03-14 |
