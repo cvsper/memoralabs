@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-03-14)
 ## Current Position
 
 Phase: 4 of 6 (Developer Experience)
-Plan: 1 of ? in phase 04 (done: 04-01)
+Plan: 2 of ? in phase 04 (done: 04-01, 04-02)
 Status: Phase 4 in progress
-Last activity: 2026-03-14 — 04-01 complete: DX-04 verification tests, 6 tests, 189/189 tests
+Last activity: 2026-03-14 — 04-02 complete: OpenAPI docs enriched with field descriptions, examples, grouped tags (auth/memory/health), error responses on all endpoints; /_test/tenant hidden; 189/189 tests
 
-Progress: [█████████░] 60%
+Progress: [█████████░] 62%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 13 (01-01, 01-02, 01-03, 01-04, 02-01, 02-02, 02-03, 02-04, 02-05, 03-01, 03-02, 03-03, 04-01)
+- Total plans completed: 14 (01-01, 01-02, 01-03, 01-04, 02-01, 02-02, 02-03, 02-04, 02-05, 03-01, 03-02, 03-03, 04-01, 04-02)
 - Average duration: ~3 min/plan
-- Total execution time: ~33 min
+- Total execution time: ~37 min
 
 **By Phase:**
 
@@ -30,7 +30,7 @@ Progress: [█████████░] 60%
 | 01-foundation | 4 | ~10 min | ~2.5 min |
 | 02-core-memory-api | 5 | ~14 min | ~2.8 min |
 | 03-auth-api-signup | 3 | ~7 min | ~2.3 min |
-| 04-developer-experience | 1 | ~3 min | ~3 min |
+| 04-developer-experience | 2 | ~7 min | ~3.5 min |
 
 **Recent Trend:**
 - Last 5 plans: 03-01 (~2 min), 03-02 (~2 min), 03-03 (~3 min), 04-01 (~3 min)
@@ -79,6 +79,9 @@ Key decisions in effect:
 - **03-03 — signup calls create_tenant_db**: tenant DB initialised at signup so POST /v1/memory works immediately; without this, first memory POST returns 500
 - **03-03 — rotation tests use signup API for setup**: full-flow integration tests rather than raw DB fixtures; caught the create_tenant_db bug in the process
 - **04-01 — TestClient over httpx.ASGITransport for DX-04 tests**: plan suggested ASGITransport + AsyncClient but project decision 02-01 establishes TestClient as required pattern (ASGITransport doesn't trigger lifespan)
+- **04-02 — model_config json_schema_extra for Pydantic v2 examples**: not deprecated singular example= parameter; json_schema_extra with examples list is the Pydantic v2 standard
+- **04-02 — response_model= added to create_memory and search_memory**: was missing; without it FastAPI generates empty {} response schema in docs — critical for DX goal
+- **04-02 — All endpoint docstrings rewritten to user-facing language**: implementation details removed; docstring becomes the endpoint summary in Swagger UI
 
 ### Pending Todos
 
@@ -94,5 +97,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-14
-Stopped at: Completed 04-01-PLAN.md (DX-04 verification tests, 6 tests, 189/189 tests)
+Stopped at: Completed 04-02-PLAN.md (OpenAPI enrichment — field descriptions, examples, tags, error responses, 189/189 tests)
 Resume file: None
