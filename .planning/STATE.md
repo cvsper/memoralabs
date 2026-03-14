@@ -9,17 +9,17 @@ See: .planning/PROJECT.md (updated 2026-03-14)
 
 ## Current Position
 
-Phase: 4 of 6 (Developer Experience)
-Plan: 4 of ? in phase 04 (done: 04-01, 04-02, 04-03, 04-04)
-Status: Phase 4 in progress
-Last activity: 2026-03-14 — 04-04 complete: QUICKSTART.md at repo root (4-step curl guide, Python example, error codes); /quickstart HTML route serving styled guide; include_in_schema=False; 189/189 tests
+Phase: 5 of 6 (Self-Improving Memory)
+Plan: 1 of ? in phase 05 (done: 05-01)
+Status: Phase 5 in progress
+Last activity: 2026-03-14 — 05-01 complete: retrieval_log table DDL + retrieval_feedback service + search pipeline instrumented; 196/196 tests
 
-Progress: [█████████░] 68%
+Progress: [█████████░] 72%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 16 (01-01, 01-02, 01-03, 01-04, 02-01, 02-02, 02-03, 02-04, 02-05, 03-01, 03-02, 03-03, 04-01, 04-02, 04-03, 04-04)
+- Total plans completed: 17 (01-01, 01-02, 01-03, 01-04, 02-01, 02-02, 02-03, 02-04, 02-05, 03-01, 03-02, 03-03, 04-01, 04-02, 04-03, 04-04, 05-01)
 - Average duration: ~3 min/plan
 - Total execution time: ~41 min
 
@@ -31,6 +31,7 @@ Progress: [█████████░] 68%
 | 02-core-memory-api | 5 | ~14 min | ~2.8 min |
 | 03-auth-api-signup | 3 | ~7 min | ~2.3 min |
 | 04-developer-experience | 4 | ~15 min | ~3.75 min |
+| 05-self-improving-memory | 1 | ~3 min | ~3 min |
 
 **Recent Trend:**
 - Last 5 plans: 03-01 (~2 min), 03-02 (~2 min), 03-03 (~3 min), 04-01 (~3 min)
@@ -87,6 +88,10 @@ Key decisions in effect:
 - **04-03 — include_in_schema=False on GET /**: landing page stays out of OpenAPI docs; only API endpoints visible in Swagger UI
 - **04-04 — Static HTML read at module level**: same pattern as landing page for /quickstart; no markdown rendering dependency
 - **04-04 — /quickstart hidden from OpenAPI schema**: include_in_schema=False keeps /docs focused on API endpoints, not documentation pages
+- **05-01 — log_retrieval reuses text_hash() from dedup.py**: no hand-rolled query hashing; consistent SHA-256 normalization
+- **05-01 — Fallback path logs with strategy="fallback"**: Q-learning router can distinguish recency-sort retrievals from vector retrievals
+- **05-01 — Feedback logging inline await (not background task)**: single SQLite INSERT is sub-millisecond; background task complexity unwarranted
+- **05-01 — try/except at both search call sites**: logging failure must never degrade search availability
 
 ### Pending Todos
 
@@ -102,5 +107,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-14
-Stopped at: Completed 04-04-PLAN.md (Quickstart guide — QUICKSTART.md at repo root + /quickstart HTML route, 189/189 tests)
+Stopped at: Completed 05-01-PLAN.md (Retrieval feedback logging — retrieval_log table, retrieval_feedback service, search pipeline instrumented, 196/196 tests)
 Resume file: None
