@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-03-14)
 ## Current Position
 
 Phase: 2 of 6 (Core Memory API)
-Plan: 4 of 5 in current phase (02-01 done, 02-02 done, 02-03 done, 02-04 done)
-Status: In progress
-Last activity: 2026-03-14 — 02-04 complete: GET/PATCH/DELETE /v1/memory + entities endpoint (RETR-03), 144/144 tests
+Plan: 5 of 5 in current phase (02-01 done, 02-02 done, 02-03 done, 02-04 done, 02-05 done)
+Status: Phase complete
+Last activity: 2026-03-14 — 02-05 complete: POST /v1/memory/search (metadata-first hybrid search, AND/OR filtering, temporal decay, rate limiting), 162/162 tests
 
-Progress: [██████░░░░] 36%
+Progress: [███████░░░] 42%
 
 ## Performance Metrics
 
