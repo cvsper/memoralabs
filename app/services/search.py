@@ -22,8 +22,11 @@ from typing import Optional
 
 import aiosqlite
 
+from app.services.confidence import compute_confidence
 from app.services.decay import apply_decay
 from app.services.embedding import EmbeddingClient
+from app.services.entity_extraction import extract_entities
+from app.services.q_router import compute_reward, select_strategy, update_q_value
 from app.services.retrieval_feedback import log_retrieval
 from app.services.vector_index import TenantIndexManager
 
@@ -58,7 +61,7 @@ async def search_memories(
             vector search to narrow the candidate set (RETR-05).
         metadata_filter_operator: "and" (all conditions required, default) or
             "or" (at least one condition required). MEM-03.
-        limit: Maximum number of results to return (1–100).
+        limit: Maximum number of results to return (1-100).
 
     Returns:
         List of result dicts matching MemorySearchResult fields, sorted by
@@ -98,7 +101,7 @@ async def search_memories(
 
     where_sql = " AND ".join(conditions)
     select_sql = (
-        f"SELECT id, text, user_id, agent_id, session_id, metadata, created_at "
+        f"SELECT id, text, user_id, agent_id, session_id, metadata, created_at, access_count "
         f"FROM memories WHERE {where_sql}"
     )
 
@@ -119,7 +122,7 @@ async def search_memories(
     query_embedding = await embedding_client.embed_single(query)
 
     if query_embedding is None:
-        # Circuit breaker tripped — fall back to recency sort
+        # Circuit breaker tripped -- fall back to recency sort
         logger.warning("Embedding client unavailable during search; falling back to recency sort")
         sorted_candidates = sorted(
             candidates.values(),
@@ -136,6 +139,7 @@ async def search_memories(
                 "id": row["id"],
                 "text": row["text"],
                 "score": 0.0,
+                "confidence": 0.0,
                 "metadata": meta,
                 "user_id": row["user_id"],
                 "agent_id": row["agent_id"],
@@ -151,7 +155,24 @@ async def search_memories(
             await log_retrieval(conn, query, result_ids, result_scores, strategy="fallback")
         except Exception:
             logger.debug("Retrieval feedback logging failed (non-fatal)")
+
+        # ------------------------------------------------------------------
+        # Fallback Step 9: Q-learning router -- select strategy, compute reward, update
+        # ------------------------------------------------------------------
+        try:
+            strategy = await select_strategy(conn)
+            avg_score = sum(r["score"] for r in results) / len(results) if results else 0.0
+            reward = compute_reward(len(results), avg_score, max_possible=limit)
+            await update_q_value(conn, strategy, "top_k_high", reward)
+        except Exception:
+            logger.debug("Q-router update failed (non-fatal)")
+
         return results
+
+    # ------------------------------------------------------------------
+    # Step 3b: Extract query entities for confidence scoring (entity overlap component)
+    # ------------------------------------------------------------------
+    query_entities = extract_entities(query)
 
     # ------------------------------------------------------------------
     # Step 4: ANN vector search restricted to candidate IDs
@@ -162,6 +183,12 @@ async def search_memories(
         k=limit,
         candidate_ids=set(candidates.keys()),
     )
+
+    # ------------------------------------------------------------------
+    # Step 4b: Track raw cosines for confidence normalization
+    # ------------------------------------------------------------------
+    raw_cosines: dict[str, float] = {mid: rs for mid, rs in raw_results}
+    max_cosine = max(raw_cosines.values()) if raw_cosines else 0.0
 
     # ------------------------------------------------------------------
     # Step 5: Apply temporal decay to each score
@@ -186,10 +213,24 @@ async def search_memories(
             meta = json.loads(row["metadata"]) if row["metadata"] else {}
         except (json.JSONDecodeError, TypeError):
             meta = {}
+
+        # Compute confidence score
+        raw_cos = raw_cosines.get(memory_id, 0.0)
+        access_ct = row.get("access_count", 0) or 0
+        conf = compute_confidence(
+            raw_cosine=raw_cos,
+            max_cosine_in_set=max_cosine,
+            query_entities=query_entities,
+            memory_text=row["text"],
+            access_count=access_ct,
+            created_at=row["created_at"],
+        )
+
         results.append({
             "id": row["id"],
             "text": row["text"],
             "score": final_score,
+            "confidence": conf,
             "metadata": meta,
             "user_id": row["user_id"],
             "agent_id": row["agent_id"],
@@ -206,6 +247,17 @@ async def search_memories(
         await log_retrieval(conn, query, result_ids, result_scores)
     except Exception:
         logger.debug("Retrieval feedback logging failed (non-fatal)")
+
+    # ------------------------------------------------------------------
+    # Step 9: Q-learning router -- select strategy, compute reward, update
+    # ------------------------------------------------------------------
+    try:
+        strategy = await select_strategy(conn)
+        avg_score = sum(r["score"] for r in results) / len(results) if results else 0.0
+        reward = compute_reward(len(results), avg_score, max_possible=limit)
+        await update_q_value(conn, strategy, "top_k_high", reward)
+    except Exception:
+        logger.debug("Q-router update failed (non-fatal)")
 
     return results
 
