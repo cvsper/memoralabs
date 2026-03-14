@@ -151,12 +151,19 @@ app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 _LANDING_HTML = (Path(__file__).parent / "static" / "landing.html").read_text()
+_QUICKSTART_HTML = (Path(__file__).parent / "static" / "quickstart.html").read_text()
 
 
 @app.get("/", response_class=HTMLResponse, include_in_schema=False)
 async def landing_page():
     """Serve the landing page."""
     return _LANDING_HTML
+
+
+@app.get("/quickstart", response_class=HTMLResponse, include_in_schema=False)
+async def quickstart_page():
+    """Serve the quickstart guide."""
+    return _QUICKSTART_HTML
 
 
 app.include_router(auth_router)
