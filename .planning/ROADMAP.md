@@ -81,13 +81,13 @@ Plans:
   3. Quickstart guide shows working curl commands that produce a stored and recalled memory end-to-end
   4. Every error response follows `{"error": "CODE", "message": "...", "details": {...}}` — no raw tracebacks, no generic 500s reach the caller
   5. Search responses include `memories_used` and `memories_limit` so developers can monitor their quota
-**Plans**: TBD
+**Plans**: 4 plans in 2 waves
 
 Plans:
-- [ ] 04-01: Structured error handling — global exception handler mapping all error classes to JSON error codes
-- [ ] 04-02: OpenAPI docs — verify auto-generated `/docs` covers all endpoints with accurate schemas; add response examples
-- [ ] 04-03: Landing page — static or server-rendered page at `/` explaining product, differentiators, and signup CTA
-- [ ] 04-04: Quickstart guide — written walkthrough (curl + Python snippet) from signup to first stored+recalled memory
+- [ ] 04-01-PLAN.md — Verify structured error responses (DX-04 already done in Phase 3) [Wave 1]
+- [ ] 04-02-PLAN.md — OpenAPI enrichment: field descriptions, examples, tag metadata, error response docs [Wave 1]
+- [ ] 04-03-PLAN.md — Landing page at `/` with product explanation and docs/quickstart CTAs [Wave 2]
+- [ ] 04-04-PLAN.md — Quickstart guide (QUICKSTART.md + /quickstart HTML route) [Wave 2]
 
 ### Phase 5: Self-Improving Memory
 **Goal**: Memory retrieval measurably improves over time without developer intervention — the core differentiator is active and demonstrable
@@ -97,7 +97,7 @@ Plans:
   1. Every search operation records a retrieval feedback entry (query, result IDs, timestamp) — the training signal exists before the router trains
   2. After sufficient retrieval log accumulation, the Q-learning router's weights shift measurably from their initialized values
   3. `POST /v1/memory/gaps` returns entity patterns that appear in query logs but are absent from stored memories
-  4. Search results include a `confidence` field (0.0–1.0) on each returned memory
+  4. Search results include a `confidence` field (0.0-1.0) on each returned memory
 **Plans**: TBD
 
 Plans:
@@ -119,19 +119,19 @@ Plans:
 Plans:
 - [ ] 06-01: Render deployment — configure `render.yaml`, persistent disk mount, environment variables, startup command
 - [ ] 06-02: Production hardening — verify disk mount path on boot, test restart recovery, confirm UptimeRobot keep-alive active
-- [ ] 06-03: Launch verification — end-to-end smoke test: signup → store → search → gap detection from fresh external IP
+- [ ] 06-03: Launch verification — end-to-end smoke test: signup -> store -> search -> gap detection from fresh external IP
 
 ---
 
 ## Progress
 
-**Execution Order:** 1 → 2 → 3 → 4 → 5 → 6
+**Execution Order:** 1 -> 2 -> 3 -> 4 -> 5 -> 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 4/4 | ✓ Complete | 2026-03-14 |
-| 2. Core Memory API | 5/5 | ✓ Complete | 2026-03-14 |
-| 3. Auth API + Signup | 3/3 | ✓ Complete | 2026-03-14 |
-| 4. Developer Experience | 0/4 | Not started | - |
+| 1. Foundation | 4/4 | Complete | 2026-03-14 |
+| 2. Core Memory API | 5/5 | Complete | 2026-03-14 |
+| 3. Auth API + Signup | 3/3 | Complete | 2026-03-14 |
+| 4. Developer Experience | 0/4 | In Progress | - |
 | 5. Self-Improving Memory | 0/4 | Not started | - |
 | 6. Deployment + Launch | 0/3 | Not started | - |
