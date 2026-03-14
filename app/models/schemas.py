@@ -66,3 +66,9 @@ class SignupResponse(BaseModel):
     api_key: str  # Shown exactly once
     key_prefix: str
     message: str
+
+
+class KeyRotateResponse(BaseModel):
+    api_key: str  # New key, shown exactly once
+    key_prefix: str
+    message: str

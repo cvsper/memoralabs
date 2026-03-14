@@ -151,6 +151,16 @@ async def update_key_last_used(conn: aiosqlite.Connection, key_hash: str) -> Non
     await conn.commit()
 
 
+async def deactivate_keys_for_tenant(conn: aiosqlite.Connection, tenant_id: str) -> int:
+    """Deactivate ALL active API keys for a tenant. Returns count of deactivated keys."""
+    cursor = await conn.execute(
+        "UPDATE api_keys SET is_active = 0 WHERE tenant_id = ? AND is_active = 1",
+        (tenant_id,),
+    )
+    await conn.commit()
+    return cursor.rowcount
+
+
 async def log_usage(
     conn: aiosqlite.Connection,
     tenant_id: str,
