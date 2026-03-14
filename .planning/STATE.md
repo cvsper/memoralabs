@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-03-14)
 ## Current Position
 
 Phase: 5 of 6 (Self-Improving Memory)
-Plan: 1 of ? in phase 05 (done: 05-01)
+Plan: 4 of ? in phase 05 (done: 05-01, 05-02, 05-03, 05-04)
 Status: Phase 5 in progress
-Last activity: 2026-03-14 — 05-01 complete: retrieval_log table DDL + retrieval_feedback service + search pipeline instrumented; 196/196 tests
+Last activity: 2026-03-14 — 05-04 complete: confidence scoring service (4-signal formula), MemorySearchResult.confidence field, search pipeline integrated, 227/227 tests
 
 Progress: [█████████░] 72%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 17 (01-01, 01-02, 01-03, 01-04, 02-01, 02-02, 02-03, 02-04, 02-05, 03-01, 03-02, 03-03, 04-01, 04-02, 04-03, 04-04, 05-01)
+- Total plans completed: 20 (01-01, 01-02, 01-03, 01-04, 02-01, 02-02, 02-03, 02-04, 02-05, 03-01, 03-02, 03-03, 04-01, 04-02, 04-03, 04-04, 05-01, 05-02, 05-03, 05-04)
 - Average duration: ~3 min/plan
-- Total execution time: ~41 min
+- Total execution time: ~50 min
 
 **By Phase:**
 
@@ -31,7 +31,7 @@ Progress: [█████████░] 72%
 | 02-core-memory-api | 5 | ~14 min | ~2.8 min |
 | 03-auth-api-signup | 3 | ~7 min | ~2.3 min |
 | 04-developer-experience | 4 | ~15 min | ~3.75 min |
-| 05-self-improving-memory | 1 | ~3 min | ~3 min |
+| 05-self-improving-memory | 4 | ~14 min | ~3.5 min |
 
 **Recent Trend:**
 - Last 5 plans: 03-01 (~2 min), 03-02 (~2 min), 03-03 (~3 min), 04-01 (~3 min)
@@ -39,6 +39,7 @@ Progress: [█████████░] 72%
 - Trend: Consistent — ~2-3 min/plan average
 
 *Updated after each plan completion*
+| Phase 05 P03 | 5 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -92,6 +93,8 @@ Key decisions in effect:
 - **05-01 — Fallback path logs with strategy="fallback"**: Q-learning router can distinguish recency-sort retrievals from vector retrievals
 - **05-01 — Feedback logging inline await (not background task)**: single SQLite INSERT is sub-millisecond; background task complexity unwarranted
 - **05-01 — try/except at both search call sites**: logging failure must never degrade search availability
+- [Phase 05]: 05-03 — POST /v1/memory/gaps on memory router not intelligence router: memory router prefix /v1/memory produces correct path; intelligence router prefix /v1/intelligence would produce wrong path
+- [Phase 05]: 05-03 — gap_detection uses extract_entities()/normalize_entity_name() not a new NLP pipeline: consistent with 02-01 entity extraction decision, avoids dependency explosion
 
 ### Pending Todos
 
@@ -107,5 +110,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-14
-Stopped at: Completed 05-01-PLAN.md (Retrieval feedback logging — retrieval_log table, retrieval_feedback service, search pipeline instrumented, 196/196 tests)
+Stopped at: Completed 05-03-PLAN.md (Knowledge gap detection — detect_knowledge_gaps service, POST /v1/memory/gaps endpoint, 8 new tests, 227/227 tests)
 Resume file: None
