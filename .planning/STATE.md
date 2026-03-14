@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-03-14)
 ## Current Position
 
 Phase: 6 of 6 (Deployment & Launch)
-Plan: 1 of ? in phase 06 (done: 06-01)
+Plan: 2 of ? in phase 06 (done: 06-01, 06-02)
 Status: Phase 6 in progress
-Last activity: 2026-03-14 — 06-01 complete: render.yaml production config (region, healthCheckPath, maxShutdownDelaySeconds, FIREWORKS_API_KEY), disk-mount guard in lifespan, 229/229 tests
+Last activity: 2026-03-14 — 06-02 complete: enhanced /health (disk_mounted + embedding_configured checks), 173-line smoke-test script (5-step lifecycle), 229/229 tests
 
 Progress: [█████████░] 78%
 
@@ -32,7 +32,7 @@ Progress: [█████████░] 78%
 | 03-auth-api-signup | 3 | ~7 min | ~2.3 min |
 | 04-developer-experience | 4 | ~15 min | ~3.75 min |
 | 05-self-improving-memory | 4 | ~14 min | ~3.5 min |
-| 06-deployment-launch | 1 | ~2 min | ~2 min |
+| 06-deployment-launch | 2 | ~5 min | ~2.5 min |
 
 **Recent Trend:**
 - Last 5 plans: 03-01 (~2 min), 03-02 (~2 min), 03-03 (~3 min), 04-01 (~3 min)
@@ -103,6 +103,9 @@ Key decisions in effect:
 - **06-01 — FIREWORKS_API_KEY sync: false**: secret entered in Render Dashboard, never committed to repo
 - **06-01 — maxShutdownDelaySeconds: 30**: matches SQLite WAL checkpoint window for zero-data-loss graceful shutdown
 - **06-01 — Disk-mount guard scoped to RENDER env var**: no impact on local dev or CI test runs; sys.exit(1) on unmounted disk
+- **06-02 — disk_mounted is null locally (not false)**: null signals "not applicable", false signals failure; prevents false degraded status in local dev
+- **06-02 — health endpoint always returns HTTP 200**: degradation is informational; status field carries signal; monitoring tools key on HTTP status code
+- **06-02 — smoke test uses python3 -c for JSON parsing**: avoids jq dependency on operator machines; universally available
 
 ### Pending Todos
 
@@ -118,5 +121,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-14
-Stopped at: Completed 06-01-PLAN.md (render.yaml production config, disk-mount guard in lifespan, 229/229 tests)
+Stopped at: Completed 06-02-PLAN.md (enhanced /health with infrastructure checks, smoke-test script, 229/229 tests)
 Resume file: None
