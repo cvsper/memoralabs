@@ -7,7 +7,7 @@ MemoraLabs is a productization of ZimMemory v15 — the core intelligence alread
 ## Phases
 
 - [x] **Phase 1: Foundation** - Secure multi-tenant infrastructure: system DB, tenant DB manager, isolation, health endpoint, persistent disk *(completed 2026-03-14)*
-- [ ] **Phase 2: Core Memory API** - Port ZimMemory engine to multi-tenant; full memory CRUD, semantic search, entity extraction, decay, deduplication
+- [x] **Phase 2: Core Memory API** - Port ZimMemory engine to multi-tenant; full memory CRUD, semantic search, entity extraction, decay, deduplication *(completed 2026-03-14)*
 - [ ] **Phase 3: Auth API + Signup** - Tenant management, API key generation/rotation, auth middleware wired end-to-end
 - [ ] **Phase 4: Developer Experience** - Public API docs, landing page, quickstart guide, structured error codes
 - [ ] **Phase 5: Self-Improving Memory** - Q-learning router activation, retrieval feedback logging, knowledge gap detection, confidence scores
@@ -130,7 +130,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 4/4 | ✓ Complete | 2026-03-14 |
-| 2. Core Memory API | 0/5 | Not started | - |
+| 2. Core Memory API | 5/5 | ✓ Complete | 2026-03-14 |
 | 3. Auth API + Signup | 0/3 | Not started | - |
 | 4. Developer Experience | 0/4 | Not started | - |
 | 5. Self-Improving Memory | 0/4 | Not started | - |
