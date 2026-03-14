@@ -57,3 +57,12 @@ class UsageLogEntry(BaseModel):
     status_code: int
     latency_ms: Optional[int] = None
     tokens_used: int = 0
+
+
+class SignupResponse(BaseModel):
+    tenant_id: str
+    email: str
+    plan: str
+    api_key: str  # Shown exactly once
+    key_prefix: str
+    message: str

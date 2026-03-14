@@ -2,8 +2,11 @@ from contextlib import asynccontextmanager
 from typing import Annotated
 
 from fastapi import Depends, FastAPI, Request
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.config import (
     DATA_DIR,
@@ -18,6 +21,7 @@ from app.db.manager import TenantDBManager
 from app.db.system import init_system_db
 from app.deps import get_tenant
 from app.limiter import limiter
+from app.routers.auth import router as auth_router
 from app.routers.health import router as health_router
 from app.routers.memory import router as memory_router
 from app.services.embedding import EmbeddingClient
@@ -65,6 +69,7 @@ app = FastAPI(
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
+app.include_router(auth_router)
 app.include_router(health_router)
 app.include_router(memory_router)
 
