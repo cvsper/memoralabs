@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-03-14)
 ## Current Position
 
 Phase: 4 of 6 (Developer Experience)
-Plan: 3 of ? in phase 04 (done: 04-01, 04-02, 04-03)
+Plan: 4 of ? in phase 04 (done: 04-01, 04-02, 04-03, 04-04)
 Status: Phase 4 in progress
-Last activity: 2026-03-14 — 04-03 complete: Landing page at GET / with dark CSS, zero external deps; /static StaticFiles mount; include_in_schema=False; 189/189 tests
+Last activity: 2026-03-14 — 04-04 complete: QUICKSTART.md at repo root (4-step curl guide, Python example, error codes); /quickstart HTML route serving styled guide; include_in_schema=False; 189/189 tests
 
-Progress: [█████████░] 65%
+Progress: [█████████░] 68%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 15 (01-01, 01-02, 01-03, 01-04, 02-01, 02-02, 02-03, 02-04, 02-05, 03-01, 03-02, 03-03, 04-01, 04-02, 04-03)
+- Total plans completed: 16 (01-01, 01-02, 01-03, 01-04, 02-01, 02-02, 02-03, 02-04, 02-05, 03-01, 03-02, 03-03, 04-01, 04-02, 04-03, 04-04)
 - Average duration: ~3 min/plan
-- Total execution time: ~37 min
+- Total execution time: ~41 min
 
 **By Phase:**
 
@@ -30,7 +30,7 @@ Progress: [█████████░] 65%
 | 01-foundation | 4 | ~10 min | ~2.5 min |
 | 02-core-memory-api | 5 | ~14 min | ~2.8 min |
 | 03-auth-api-signup | 3 | ~7 min | ~2.3 min |
-| 04-developer-experience | 3 | ~11 min | ~3.7 min |
+| 04-developer-experience | 4 | ~15 min | ~3.75 min |
 
 **Recent Trend:**
 - Last 5 plans: 03-01 (~2 min), 03-02 (~2 min), 03-03 (~3 min), 04-01 (~3 min)
@@ -85,6 +85,8 @@ Key decisions in effect:
 - **04-03 — Module-level _LANDING_HTML**: HTML read at import time, not per request — simpler and faster
 - **04-03 — /static mount after all include_router() calls**: StaticFiles mount order matters in FastAPI; late mounting prevents shadowing API routes
 - **04-03 — include_in_schema=False on GET /**: landing page stays out of OpenAPI docs; only API endpoints visible in Swagger UI
+- **04-04 — Static HTML read at module level**: same pattern as landing page for /quickstart; no markdown rendering dependency
+- **04-04 — /quickstart hidden from OpenAPI schema**: include_in_schema=False keeps /docs focused on API endpoints, not documentation pages
 
 ### Pending Todos
 
@@ -100,5 +102,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-14
-Stopped at: Completed 04-03-PLAN.md (Landing page at GET / — dark CSS, StaticFiles mount, zero external deps, 189/189 tests)
+Stopped at: Completed 04-04-PLAN.md (Quickstart guide — QUICKSTART.md at repo root + /quickstart HTML route, 189/189 tests)
 Resume file: None
