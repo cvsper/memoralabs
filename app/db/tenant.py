@@ -123,6 +123,18 @@ CREATE INDEX IF NOT EXISTS idx_rlog_hash ON retrieval_log(query_hash);
 
 INSERT OR IGNORE INTO schema_version (version, applied_at, description)
 VALUES (2, strftime('%s', 'now'), '005_retrieval_log');
+
+CREATE TABLE IF NOT EXISTS retrieval_q_table (
+    strategy TEXT NOT NULL,
+    config_key TEXT NOT NULL,
+    q_value REAL DEFAULT 0.5,
+    visit_count INTEGER DEFAULT 0,
+    last_updated INTEGER,
+    PRIMARY KEY (strategy, config_key)
+);
+
+INSERT OR IGNORE INTO schema_version (version, applied_at, description)
+VALUES (3, strftime('%s', 'now'), '005_q_table');
 """
 
 
