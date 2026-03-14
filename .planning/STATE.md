@@ -9,19 +9,19 @@ See: .planning/PROJECT.md (updated 2026-03-14)
 
 ## Current Position
 
-Phase: 3 of 6 (Auth API & Signup) — COMPLETE
-Plan: 3 of 3 in phase 03 (all done: 03-01, 03-02, 03-03)
-Status: Phase 3 complete — ready for Phase 4
-Last activity: 2026-03-14 — 03-03 complete: POST /v1/auth/keys/rotate endpoint, 7 rotation tests, signup now inits tenant DB, 183/183 tests
+Phase: 4 of 6 (Developer Experience)
+Plan: 1 of ? in phase 04 (done: 04-01)
+Status: Phase 4 in progress
+Last activity: 2026-03-14 — 04-01 complete: DX-04 verification tests, 6 tests, 189/189 tests
 
-Progress: [█████████░] 58%
+Progress: [█████████░] 60%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 12 (01-01, 01-02, 01-03, 01-04, 02-01, 02-02, 02-03, 02-04, 02-05, 03-01, 03-02, 03-03)
+- Total plans completed: 13 (01-01, 01-02, 01-03, 01-04, 02-01, 02-02, 02-03, 02-04, 02-05, 03-01, 03-02, 03-03, 04-01)
 - Average duration: ~3 min/plan
-- Total execution time: ~30 min
+- Total execution time: ~33 min
 
 **By Phase:**
 
@@ -30,9 +30,11 @@ Progress: [█████████░] 58%
 | 01-foundation | 4 | ~10 min | ~2.5 min |
 | 02-core-memory-api | 5 | ~14 min | ~2.8 min |
 | 03-auth-api-signup | 3 | ~7 min | ~2.3 min |
+| 04-developer-experience | 1 | ~3 min | ~3 min |
 
 **Recent Trend:**
-- Last 5 plans: 02-04 (~3 min), 02-05 (~2 min), 03-01 (~2 min), 03-02 (~2 min), 03-03 (~3 min)
+- Last 5 plans: 03-01 (~2 min), 03-02 (~2 min), 03-03 (~3 min), 04-01 (~3 min)
+- Trend: Consistent — ~2-3 min/plan average
 - Trend: Consistent — ~2-3 min/plan average
 
 *Updated after each plan completion*
@@ -76,6 +78,7 @@ Key decisions in effect:
 - **03-03 — deactivate_keys_for_tenant deactivates ALL keys**: no key accumulation after rotation; exactly one active key always
 - **03-03 — signup calls create_tenant_db**: tenant DB initialised at signup so POST /v1/memory works immediately; without this, first memory POST returns 500
 - **03-03 — rotation tests use signup API for setup**: full-flow integration tests rather than raw DB fixtures; caught the create_tenant_db bug in the process
+- **04-01 — TestClient over httpx.ASGITransport for DX-04 tests**: plan suggested ASGITransport + AsyncClient but project decision 02-01 establishes TestClient as required pattern (ASGITransport doesn't trigger lifespan)
 
 ### Pending Todos
 
@@ -91,5 +94,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-14
-Stopped at: Completed 03-03-PLAN.md (key rotation endpoint, 7 rotation tests, 183/183 tests, Phase 3 complete)
+Stopped at: Completed 04-01-PLAN.md (DX-04 verification tests, 6 tests, 189/189 tests)
 Resume file: None
