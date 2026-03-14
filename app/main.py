@@ -6,7 +6,6 @@ from fastapi import Depends, FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
-from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
@@ -148,7 +147,19 @@ async def unhandled_exception_handler(request: Request, exc: Exception):
 
 
 app.state.limiter = limiter
-app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+
+@app.exception_handler(RateLimitExceeded)
+async def rate_limit_exceeded_handler(request: Request, exc: RateLimitExceeded):
+    """Rate limit errors return structured JSON matching project standard."""
+    return JSONResponse(
+        status_code=429,
+        content={
+            "error": "RATE_LIMITED",
+            "message": str(exc.detail),
+        },
+        headers={"Retry-After": str(getattr(exc, "retry_after", 60))},
+    )
 
 _LANDING_HTML = (Path(__file__).parent / "static" / "landing.html").read_text()
 _QUICKSTART_HTML = (Path(__file__).parent / "static" / "quickstart.html").read_text()
